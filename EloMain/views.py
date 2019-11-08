@@ -11,7 +11,7 @@ from .models import Championship, Game, Club
 
 def index(request):
 
-    russian_champ = Championship.objects.get(name='Англия')
+    russian_champ = Championship.objects.get(name='Италия')
     russian_link = russian_champ.link
 
     driver = webdriver.Chrome('/home/lenkov/disk/work/chromedriver_linux64/chromedriver')
