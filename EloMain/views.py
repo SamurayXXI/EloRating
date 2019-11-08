@@ -9,9 +9,9 @@ from .models import Championship, Game, Club
 # Create your views here.
 
 
-def index(request):
+def fill_national(request):
 
-    russian_champ = Championship.objects.get(name='Италия')
+    russian_champ = Championship.objects.get(name='Россия')
     russian_link = russian_champ.link
 
     driver = webdriver.Chrome('/home/lenkov/disk/work/chromedriver_linux64/chromedriver')
@@ -21,9 +21,9 @@ def index(request):
 
     i = 1
 
-    while len(driver.find_elements_by_xpath("//div[@class='live_comptt_bd' and ./div[@class='block_header' and text()='{}-й тур']]".format(i)))>0:
+    while len(driver.find_elements_by_xpath("//div[@class='live_comptt_bd' and ./div[@class='block_header' and text()='Регулярный сезон | {}-й тур']]".format(i)))>0:
         print("Tour {}".format(i))
-        matches = driver.find_elements_by_xpath("//div[@class='live_comptt_bd' and ./div[@class='block_header' and text()='{}-й тур']]//div[@class='game_block']//a".format(i))
+        matches = driver.find_elements_by_xpath("//div[@class='live_comptt_bd' and ./div[@class='block_header' and text()='Регулярный сезон | {}-й тур']]//div[@class='game_block']//a".format(i))
 
         for match in matches:
             match_id = match.get_attribute('dt-id')
@@ -34,8 +34,47 @@ def index(request):
             away_team = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='game_at']//div[@class='game_team']//span".format(match_id)).text
             print("{} {} {}-{} {}".format(date,home_team,home_score,away_score,away_team))
 
-            home_team_obj = Club.objects.filter(name__contains='{}'.format(home_team), championship=russian_champ)[0]
-            away_team_obj = Club.objects.filter(name__contains='{}'.format(away_team), championship=russian_champ)[0]
+            home_team_obj = Club.objects.get(name=home_team, championship=russian_champ)
+            away_team_obj = Club.objects.get(name=away_team, championship=russian_champ)
+            print(home_team)
+            print(away_team)
+
+            date1 = datetime.strptime(date, "%d.%m.%y")
+
+            game = Game(date=date1.strftime("%Y-%m-%d"), home_team=home_team_obj, away_team=away_team_obj, home_score=home_score, away_score=away_score, tournament=russian_champ)
+            game.save()
+
+        i+=1
+
+    return HttpResponse(russian_champ.link)
+
+def fill_lc(request):
+
+    russian_champ = Championship.objects.get(name='Лига Чемпионов Группы 19/20')
+    russian_link = russian_champ.link
+
+    driver = webdriver.Chrome('/home/lenkov/disk/work/chromedriver_linux64/chromedriver')
+    driver.get(russian_link)
+
+    print(0)
+
+    i = 1
+
+    while len(driver.find_elements_by_xpath("//div[@class='live_comptt_bd' and ./div[@class='block_header' and text()='Групповая стадия | {}-й тур']]".format(i)))>0:
+        print("Tour {}".format(i))
+        matches = driver.find_elements_by_xpath("//div[@class='live_comptt_bd' and ./div[@class='block_header' and text()='Групповая стадия | {}-й тур']]//div[@class='game_block']//a".format(i))
+        print("len(matches)={}".format(len(matches)))
+        for match in matches:
+            match_id = match.get_attribute('dt-id')
+            date = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='game_ht']//div[@class='game_start']//span".format(match_id)).text
+            home_team = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='game_ht']//div[@class='game_team']//span".format(match_id)).text
+            home_score = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='game_ht']//div[@class='game_goals']//span".format(match_id)).text
+            away_score = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='game_at']//div[@class='game_goals']//span".format(match_id)).text
+            away_team = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='game_at']//div[@class='game_team']//span".format(match_id)).text
+            print("{} {} {}-{} {}".format(date,home_team,home_score,away_score,away_team))
+
+            home_team_obj = Club.objects.filter(name__contains='{}'.format(home_team))[0]
+            away_team_obj = Club.objects.filter(name__contains='{}'.format(away_team))[0]
             print(home_team)
             print(away_team)
 
