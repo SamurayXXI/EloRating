@@ -14,7 +14,7 @@ def fill_national(request):
     russian_champ = Championship.objects.get(name='Франция')
     russian_link = russian_champ.link
 
-    driver = webdriver.Chrome('/home/lenkov/disk/work/chromedriver_linux64/chromedriver')
+    driver = webdriver.Chrome('/home/leonid/chromedriver_linux64/chromedriver')
     driver.get(russian_link)
 
     print(0)
@@ -39,7 +39,11 @@ def fill_national(request):
             print(home_team)
             print(away_team)
 
-            date1 = datetime.strptime(date, "%d.%m.%y")
+            try:
+                date1 = datetime.strptime(date, "%d.%m.%y")
+            except Exception as e:
+                print(e)
+                continue
 
             game = Game(date=date1.strftime("%Y-%m-%d"), home_team=home_team_obj, away_team=away_team_obj, home_score=home_score, away_score=away_score, tournament=russian_champ)
             game.save()
@@ -53,7 +57,7 @@ def fill_lc(request):
     russian_champ = Championship.objects.get(name='Лига Чемпионов Группы')
     russian_link = russian_champ.link
 
-    driver = webdriver.Chrome('/home/lenkov/disk/work/chromedriver_linux64/chromedriver')
+    driver = webdriver.Chrome('/home/leonid/chromedriver_linux64/chromedriver')
     driver.get(russian_link)
 
     print(0)
@@ -92,7 +96,7 @@ def fill_lc_final(request):
     russian_champ = Championship.objects.get(name='Лига Чемпионов Финалы')
     russian_link = russian_champ.link
 
-    driver = webdriver.Chrome('/home/lenkov/disk/work/chromedriver_linux64/chromedriver')
+    driver = webdriver.Chrome('/home/leonid/chromedriver_linux64/chromedriver')
     driver.get(russian_link)
 
     print(0)
