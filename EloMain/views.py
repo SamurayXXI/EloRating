@@ -11,7 +11,7 @@ from .models import Championship, Game, Club
 
 def fill_national(request):
 
-    russian_champ = Championship.objects.get(name='Франция')
+    russian_champ = Championship.objects.get(name='Италия')
     russian_link = russian_champ.link
 
     driver = webdriver.Chrome('/home/leonid/chromedriver_linux64/chromedriver')
@@ -21,9 +21,9 @@ def fill_national(request):
 
     i = 1
 
-    while len(driver.find_elements_by_xpath("//div[@class='live_comptt_bd' and ./div[@class='block_header' and text()='Регулярный сезон | {}-й тур']]".format(i)))>0:
+    while len(driver.find_elements_by_xpath("//div[@class='live_comptt_bd' and ./div[@class='block_header' and text()='{}-й тур']]".format(i)))>0:
         print("Tour {}".format(i))
-        matches = driver.find_elements_by_xpath("//div[@class='live_comptt_bd' and ./div[@class='block_header' and text()='Регулярный сезон | {}-й тур']]//div[@class='game_block']//a".format(i))
+        matches = driver.find_elements_by_xpath("//div[@class='live_comptt_bd' and ./div[@class='block_header' and text()='{}-й тур']]//div[@class='game_block']//a".format(i))
 
         for match in matches:
             match_id = match.get_attribute('dt-id')
@@ -102,7 +102,7 @@ def fill_lc_final(request):
     print(0)
 
 
-    finals = ('1/8 финала','Четвертьфинал', 'Полуфинал','Финал')
+    finals = ('1/8 финала','1/4 финала','1/2 финала','Четвертьфинал', 'Полуфинал','Финал')
 
     for final in finals:
 
