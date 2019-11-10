@@ -56,3 +56,6 @@ class Change(models.Model):
     rating_before = models.IntegerField(verbose_name='Рейтинг до')
     rating_after = models.IntegerField(verbose_name='Рейтинг после')
     rating_delta = models.IntegerField(verbose_name='Дельта')
+
+    def __str__(self):
+        return "{} {} {}".format(self.game.date,self.club.name,self.rating_delta)

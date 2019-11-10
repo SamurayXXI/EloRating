@@ -5,7 +5,9 @@ from django.shortcuts import render
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 
-from .models import Championship, Game, Club
+from .models import Championship, Game, Club, Change
+
+
 # Create your views here.
 
 
@@ -136,8 +138,22 @@ def calc(request):
     print("Количество: {}".format(len_games))
     print(games[0], games[len_games-1])
 
-    for i in range(10):
-        game = games[i]
+
+
+    clubs = Club.objects.all()
+    for club in clubs:
+        changes = Change.objects.filter(club=club).order_by('game__date')
+        i = 0
+        while i<len(changes)-1:
+            if changes[i].rating_after != changes[i+1].rating_before:
+                print(club, changes[i], changes[i+1])
+            i+=1
+
+    return HttpResponse("Готово")
+
+    # for i in range(2):
+    #     game = games[i]
+    for game in games:
         index = game.tournament.elo_index
 
         home_team = game.home_team
@@ -148,15 +164,23 @@ def calc(request):
         ht_rating = home_team.rating
         at_rating = away_team.rating
 
-        print(ht_rating,at_rating,ht_score,at_score,index)
-
         delta = calc_rating_delta(ht_rating,at_rating,ht_score,at_score,index)
 
         home_team.rating = ht_rating + delta
         away_team.rating = at_rating - delta
 
-        print(home_team.rating, away_team.rating)
-        print(delta)
+        home_team.save()
+        away_team.save()
+
+        change_h = Change(game=game, club=home_team, rating_before=ht_rating, rating_after=home_team.rating, rating_delta=delta)
+        change_a = Change(game=game, club=away_team, rating_before=at_rating, rating_after=away_team.rating, rating_delta=-delta)
+
+        change_h.save()
+        change_a.save()
+
+        print("{} {} - {} {}".format(home_team.name, home_team.rating, away_team.rating, away_team.name))
+
+    clubs = Club.objects.all().order_by('-rating')
 
     return HttpResponse("Готово")
 
