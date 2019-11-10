@@ -135,4 +135,55 @@ def calc(request):
     len_games = len(games)
     print("Количество: {}".format(len_games))
     print(games[0], games[len_games-1])
+
+    for i in range(10):
+        game = games[i]
+        index = game.tournament.elo_index
+
+        home_team = game.home_team
+        away_team = game.away_team
+        ht_score = game.home_score
+        at_score = game.away_score
+
+        ht_rating = home_team.rating
+        at_rating = away_team.rating
+
+        print(ht_rating,at_rating,ht_score,at_score,index)
+
+        delta = calc_rating_delta(ht_rating,at_rating,ht_score,at_score,index)
+
+        home_team.rating = ht_rating + delta
+        away_team.rating = at_rating - delta
+
+        print(home_team.rating, away_team.rating)
+        print(delta)
+
     return HttpResponse("Готово")
+
+def calc_rating_delta(own_rating, rival_rating, own_score, rival_score, index):
+    goals_delta = own_score - rival_score
+    rating_delta = own_rating - rival_rating
+    return round(index*calc_G(goals_delta)*(calc_W(goals_delta) - calc_We(rating_delta)),2)
+
+def calc_G(goals_delta):
+    goals_delta = abs(goals_delta)
+
+    if goals_delta<2:
+        return 1.0
+
+    if goals_delta==2:
+        return 1.5
+
+    return (11+goals_delta)/8
+
+def calc_We(rating_delta):
+    power = -rating_delta/400
+    return 1/(10**power + 1)
+
+def calc_W(goals_delta):
+    if goals_delta<0:
+        return 0
+    if goals_delta==0:
+        return 0.5
+    if goals_delta>0:
+        return 1

@@ -44,3 +44,15 @@ class Game(models.Model):
 
     def __str__(self):
         return "{} {} {}-{} {}".format(self.date, self.home_team, self.home_score, self.away_score, self.away_team)
+
+class Change(models.Model):
+    class Meta:
+        db_table = 'changes'
+        verbose_name = 'Изменение рейтинга'
+        verbose_name_plural = 'Изменения рейтинга'
+
+    game = models.ForeignKey(Game, on_delete=models.DO_NOTHING, related_name='game', verbose_name='Игра')
+    club = models.ForeignKey(Club, on_delete=models.DO_NOTHING, related_name='club', verbose_name='Клуб')
+    rating_before = models.IntegerField(verbose_name='Рейтинг до')
+    rating_after = models.IntegerField(verbose_name='Рейтинг после')
+    rating_delta = models.IntegerField(verbose_name='Дельта')

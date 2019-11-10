@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Championship, Club, Game
+from .models import Championship, Club, Game, Change
 
 class ClubAdmin(admin.ModelAdmin):
     list_filter = ('championship', )
@@ -13,4 +13,5 @@ class GameAdmin(admin.ModelAdmin):
 admin.site.register(Championship)
 admin.site.register(Club, ClubAdmin)
 admin.site.register(Game, GameAdmin)
+admin.site.register(Change)
 
