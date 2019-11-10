@@ -11,7 +11,7 @@ from .models import Championship, Game, Club
 
 def fill_national(request):
 
-    russian_champ = Championship.objects.get(name='Франция')
+    russian_champ = Championship.objects.get(name='Италия')
     russian_link = russian_champ.link
 
     driver = webdriver.Chrome('/home/leonid/chromedriver_linux64/chromedriver')
