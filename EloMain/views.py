@@ -94,7 +94,7 @@ def fill_lc(request):
 
 def fill_lc_final(request):
 
-    russian_champ = Championship.objects.get(name='Лига Чемпионов Финалы')
+    russian_champ = Championship.objects.get(name='Лига Европы Финалы')
     russian_link = russian_champ.link
 
     driver = webdriver.Chrome('/home/leonid/chromedriver_linux64/chromedriver')
@@ -103,7 +103,7 @@ def fill_lc_final(request):
     print(0)
 
 
-    finals = ('1/8 финала','1/4 финала','1/2 финала','Четвертьфинал', 'Полуфинал','Финал')
+    finals = ('1/16 финала','1/8 финала','1/4 финала','1/2 финала','Четвертьфинал', 'Полуфинал','Финал')
 
     for final in finals:
 
