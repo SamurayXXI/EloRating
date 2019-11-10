@@ -64,9 +64,10 @@ def fill_lc(request):
 
     i = 1
 
-    while len(driver.find_elements_by_xpath("//div[@class='live_comptt_bd' and ./div[@class='block_header' and text()='Групповая стадия | {}-й тур']]".format(i)))>0:
+    while i==1:
+    # while len(driver.find_elements_by_xpath("//div[@class='live_comptt_bd' and ./div[@class='block_header' and text()='Групповая стадия | {}-й тур']]".format(i)))>0:
         print("Tour {}".format(i))
-        matches = driver.find_elements_by_xpath("//div[@class='live_comptt_bd' and ./div[@class='block_header' and text()='Групповая стадия | {}-й тур']]//div[@class='game_block']//a".format(i))
+        matches = driver.find_elements_by_xpath("//div[@class='live_comptt_bd' and ./div[@class='block_header' and text()='Групповая стадия']]//div[@class='game_block']//a".format(i))
         print("len(matches)={}".format(len(matches)))
         for match in matches:
             match_id = match.get_attribute('dt-id')
