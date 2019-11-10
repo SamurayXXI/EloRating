@@ -129,3 +129,10 @@ def fill_lc_final(request):
             game.save()
 
     return HttpResponse(russian_champ.link)
+
+def calc(request):
+    games = Game.objects.all().order_by('date')
+    len_games = len(games)
+    print("Количество: {}".format(len_games))
+    print(games[0], games[len_games-1])
+    return HttpResponse("Готово")
