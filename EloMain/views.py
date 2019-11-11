@@ -30,6 +30,27 @@ def show_country_rating(request):
 
     return render(request, 'EloMain/country_rating.html', locals())
 
+def top_delta(request):
+    changes = Change.objects.all().order_by('-rating_delta')
+    changes = changes[:5]
+    return render(request, 'EloMain/top_changes.html', locals())
+
+def top_rating_ever(request):
+    changes = Change.objects.all().order_by('-rating_after')
+    used_clubs = []
+    top = []
+    i = 0
+    while len(top)<5:
+        change = changes[i]
+        if change.club not in used_clubs:
+            top.append(change)
+            used_clubs.append(change.club)
+        i+=1
+    print(top)
+
+    return render(request, 'EloMain/top_rating_ever.html', locals())
+
+
 
 def fill_national(request):
 

@@ -13,4 +13,6 @@ urlpatterns = [
     path('test_ratings', views.test_ratings),
     path('rating', views.show_rating),
     path('country_rating', views.show_country_rating),
+    path('top_changes', views.top_delta),
+    path('top_rating_ever', views.top_rating_ever),
 ]
