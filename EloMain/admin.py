@@ -8,6 +8,7 @@ class ClubAdmin(admin.ModelAdmin):
     list_filter = ('championship', )
     search_fields = ('name', )
 
+
 class GameAdmin(admin.ModelAdmin):
     list_filter = ('tournament',)
 

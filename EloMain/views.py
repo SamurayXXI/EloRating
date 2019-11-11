@@ -10,6 +10,26 @@ from .models import Championship, Game, Club, Change
 
 # Create your views here.
 
+def show_rating(request):
+    clubs = Club.objects.all().order_by('-rating')
+    return render(request, 'EloMain/rating.html', locals())
+
+def show_country_rating(request):
+    tourns = Championship.objects.filter(elo_index=30)
+    champs = []
+    for champ in tourns:
+        clubs = Club.objects.filter(championship=champ).order_by('-rating')
+        clubs = clubs[:15]
+        total = 0
+        for club in clubs:
+            total += club.rating
+        champs.append((champ,round(total/15,2)))
+    champs.sort(key=lambda x: -x[1])
+
+    print(champs)
+
+    return render(request, 'EloMain/country_rating.html', locals())
+
 
 def fill_national(request):
 
@@ -150,7 +170,7 @@ def reset_matches(requset):
     Game.objects.filter(tournament__name='Лига Европы Финалы').delete()
     return HttpResponse("Готово")
 
-def test_ratings():
+def test_ratings(request):
     clubs = Club.objects.all()
     for club in clubs:
         changes = Change.objects.filter(club=club).order_by('game__date')
@@ -159,13 +179,15 @@ def test_ratings():
             assert changes[i].rating_after == changes[i + 1].rating_before
             i += 1
 
+    return HttpResponse("Готово")
+
 def calc(request):
     games = Game.objects.all().order_by('date')
     len_games = len(games)
     print("Количество: {}".format(len_games))
-    print(games[0], games[len_games-1])
+    # print(games[0], games[len_games-1])
 
-    return HttpResponse("Готово")
+    # return HttpResponse("Готово")
 
     # for i in range(2):
     #     game = games[i]
