@@ -54,7 +54,7 @@ def top_rating_ever(request):
 
 def fill_national(request):
 
-    russian_champ = Championship.objects.get(name='Франция')
+    russian_champ = Championship.objects.get(name='Голландия')
     russian_link = russian_champ.link
 
     # driver = webdriver.Chrome('/home/leonid/chromedriver_linux64/chromedriver')
@@ -63,7 +63,7 @@ def fill_national(request):
 
     print(0)
 
-    i = 13
+    i = 1
 
     while len(driver.find_elements_by_xpath("//div[@class='live_comptt_bd' and ./div[@class='block_header' and text()='{}-й тур']]".format(i)))>0:
         print("Tour {}".format(i))
@@ -188,7 +188,7 @@ def reset_ratings(request):
     return HttpResponse("Готово")
 
 def reset_matches(requset):
-    Game.objects.filter(tournament__name='Лига Европы Финалы').delete()
+    Game.objects.filter(tournament__name='Голландия').delete()
     return HttpResponse("Готово")
 
 def test_ratings(request):
