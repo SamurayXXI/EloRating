@@ -188,7 +188,7 @@ def reset_ratings(request):
     return HttpResponse("Готово")
 
 def reset_matches(requset):
-    Game.objects.filter(tournament__name='Голландия').delete()
+    # Game.objects.filter(tournament__name='Голландия').delete()
     return HttpResponse("Готово")
 
 def test_ratings(request):
