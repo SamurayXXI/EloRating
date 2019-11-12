@@ -1,7 +1,8 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Championship, Club, Game, Change
+from .models import Championship, Club, Game, Change, Position
+
 
 class ClubAdmin(admin.ModelAdmin):
     list_display = ('name', 'rating')
@@ -20,4 +21,4 @@ admin.site.register(Championship)
 admin.site.register(Club, ClubAdmin)
 admin.site.register(Game, GameAdmin)
 admin.site.register(Change, ChangeAdmin)
-
+admin.site.register(Position)

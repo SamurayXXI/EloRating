@@ -59,3 +59,24 @@ class Change(models.Model):
 
     def __str__(self):
         return "{} {} {}".format(self.game.date,self.club.name,self.rating_delta)
+
+class Position(models.Model):
+    class Meta:
+        db_table = 'positions'
+        verbose_name = 'Место рейтинга'
+        verbose_name_plural = 'Места рейтинга'
+
+    date = models.DateField(verbose_name='Дата')
+    club_1 = models.ForeignKey(Club, on_delete=models.DO_NOTHING, related_name='club_1', verbose_name='1-е место')
+    club_2 = models.ForeignKey(Club, on_delete=models.DO_NOTHING, related_name='club_2', verbose_name='2-е место')
+    club_3 = models.ForeignKey(Club, on_delete=models.DO_NOTHING, related_name='club_3', verbose_name='3-е место')
+    club_4 = models.ForeignKey(Club, on_delete=models.DO_NOTHING, related_name='club_4', verbose_name='4-е место')
+    club_5 = models.ForeignKey(Club, on_delete=models.DO_NOTHING, related_name='club_5', verbose_name='5-е место')
+    club_6 = models.ForeignKey(Club, on_delete=models.DO_NOTHING, related_name='club_6', verbose_name='6-е место')
+    club_7 = models.ForeignKey(Club, on_delete=models.DO_NOTHING, related_name='club_7', verbose_name='7-е место')
+    club_8 = models.ForeignKey(Club, on_delete=models.DO_NOTHING, related_name='club_8', verbose_name='8-е место')
+    club_9 = models.ForeignKey(Club, on_delete=models.DO_NOTHING, related_name='club_9', verbose_name='9-е место')
+    club_10 = models.ForeignKey(Club, on_delete=models.DO_NOTHING, related_name='club_10', verbose_name='10-е место')
+
+    def __str__(self):
+        return "{} {} {} {} {} {} {} {} {} {} {}".format(self.date,self.club_1.name,self.club_2.name,self.club_3.name,self.club_4.name,self.club_5.name,self.club_6.name,self.club_7.name,self.club_8.name,self.club_9.name,self.club_10.name)

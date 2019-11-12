@@ -18,4 +18,5 @@ urlpatterns = [
     path('top_rating_ever', views.top_rating_ever),
     path('get_chart', views.get_chart),
     path('charts', views.charts),
+    path('fill_change_position', views.fill_change_position),
 ]

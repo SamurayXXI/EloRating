@@ -3,10 +3,11 @@ from django.db.models import Q
 
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.utils.datastructures import OrderedSet
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 
-from .models import Championship, Game, Club, Change
+from .models import Championship, Game, Club, Change, Position
 
 
 # Create your views here.
@@ -297,3 +298,24 @@ def calc_W(goals_delta):
         return 0.5
     if goals_delta>0:
         return 1
+
+def fill_change_position(request):
+    dates = OrderedSet()
+    for x in Change.objects.all().order_by('id'):
+        if x.game.date not in dates:
+            dates.add(x.game.date)
+
+    for date in dates:
+        changes = Change.objects.all().filter(game__date__lte=date).order_by('-rating_after').distinct()[:10]
+        if len(changes)<10:
+            continue
+
+        print(type(changes[0].club))
+
+        position = Position(date,changes[0].club,changes[1].club,changes[2].club,changes[3].club,changes[4].club,changes[5].club,changes[6].club,changes[7].club,changes[8].club,changes[9].club)
+        print(position)
+        position.save()
+
+
+
+    return HttpResponse(dates)
