@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.db.models import Q
 
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -17,6 +18,9 @@ def show_rating(request):
 def show_rating_by_champ(request, champ_id):
     clubs = Club.objects.filter(championship__id=champ_id).order_by('-rating')
     return render(request, 'EloMain/rating.html', locals())
+
+def charts(request):
+    return render(request, 'EloMain/charts.html')
 
 def show_country_rating(request):
     tourns = Championship.objects.filter(elo_index=30)
@@ -54,7 +58,26 @@ def top_rating_ever(request):
 
     return render(request, 'EloMain/top_rating_ever.html', locals())
 
-
+def get_chart(request):
+    club_names = ('Ливерпуль','Бавария', 'Барселона')
+    club_changes = Change.objects.filter(Q(club__name=club_names[0]) | Q(club__name=club_names[1]) | Q(club__name=club_names[2])).order_by('id')
+    script = ''
+    last_liv = 1000
+    last_bav = 1000
+    last_bars = 1000
+    for change in club_changes:
+        date = change.game.date
+        if change.club.name==club_names[0]:
+            script += '[new Date({},{},{}), {}, {}, {}],'.format(date.year,date.month,date.day,change.rating_after,last_bav, last_bars)
+            last_liv = change.rating_after
+        elif change.club.name == club_names[1]:
+            script += '[new Date({},{},{}), {}, {}, {}],'.format(date.year, date.month, date.day, last_liv, change.rating_after, last_bars)
+            last_bav = change.rating_after
+        elif change.club.name == club_names[2]:
+            script += '[new Date({},{},{}), {}, {}, {}],'.format(date.year, date.month, date.day, last_liv, last_bav ,change.rating_after)
+            last_bars = change.rating_after
+    print(script)
+    return HttpResponse(script)
 
 def fill_national(request):
 

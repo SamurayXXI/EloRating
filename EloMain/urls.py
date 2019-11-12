@@ -16,4 +16,6 @@ urlpatterns = [
     path('country_rating', views.show_country_rating),
     path('top_changes', views.top_delta),
     path('top_rating_ever', views.top_rating_ever),
+    path('get_chart', views.get_chart),
+    path('charts', views.charts),
 ]
