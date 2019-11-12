@@ -12,6 +12,7 @@ urlpatterns = [
     path('reset_matches', views.reset_matches),
     path('test_ratings', views.test_ratings),
     path('rating', views.show_rating),
+    path('rating/<int:champ_id>', views.show_rating_by_champ,),
     path('country_rating', views.show_country_rating),
     path('top_changes', views.top_delta),
     path('top_rating_ever', views.top_rating_ever),

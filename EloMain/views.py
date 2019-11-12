@@ -14,16 +14,20 @@ def show_rating(request):
     clubs = Club.objects.all().order_by('-rating')
     return render(request, 'EloMain/rating.html', locals())
 
+def show_rating_by_champ(request, champ_id):
+    clubs = Club.objects.filter(championship__id=champ_id).order_by('-rating')
+    return render(request, 'EloMain/rating.html', locals())
+
 def show_country_rating(request):
     tourns = Championship.objects.filter(elo_index=30)
     champs = []
     for champ in tourns:
         clubs = Club.objects.filter(championship=champ).order_by('-rating')
-        clubs = clubs[:15]
+        clubs = clubs[:10]
         total = 0
         for club in clubs:
             total += club.rating
-        champs.append((champ,round(total/15,2)))
+        champs.append((champ,round(total/10,2),'rating/{}'.format(champ.id)))
     champs.sort(key=lambda x: -x[1])
 
     print(champs)
