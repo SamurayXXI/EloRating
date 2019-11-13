@@ -67,16 +67,17 @@ class Position(models.Model):
         verbose_name_plural = 'Места рейтинга'
 
     date = models.DateField(verbose_name='Дата')
-    club_1 = models.ForeignKey(Club, on_delete=models.DO_NOTHING, related_name='club_1', verbose_name='1-е место')
-    club_2 = models.ForeignKey(Club, on_delete=models.DO_NOTHING, related_name='club_2', verbose_name='2-е место')
-    club_3 = models.ForeignKey(Club, on_delete=models.DO_NOTHING, related_name='club_3', verbose_name='3-е место')
-    club_4 = models.ForeignKey(Club, on_delete=models.DO_NOTHING, related_name='club_4', verbose_name='4-е место')
-    club_5 = models.ForeignKey(Club, on_delete=models.DO_NOTHING, related_name='club_5', verbose_name='5-е место')
-    club_6 = models.ForeignKey(Club, on_delete=models.DO_NOTHING, related_name='club_6', verbose_name='6-е место')
-    club_7 = models.ForeignKey(Club, on_delete=models.DO_NOTHING, related_name='club_7', verbose_name='7-е место')
-    club_8 = models.ForeignKey(Club, on_delete=models.DO_NOTHING, related_name='club_8', verbose_name='8-е место')
-    club_9 = models.ForeignKey(Club, on_delete=models.DO_NOTHING, related_name='club_9', verbose_name='9-е место')
-    club_10 = models.ForeignKey(Club, on_delete=models.DO_NOTHING, related_name='club_10', verbose_name='10-е место')
+    club_1 = models.CharField(max_length=50, verbose_name='1-е место')
+    club_2 = models.CharField(max_length=50, verbose_name='2-е место')
+    club_3 = models.CharField(max_length=50, verbose_name='3-е место')
+    club_4 = models.CharField(max_length=50, verbose_name='4-е место')
+    club_5 = models.CharField(max_length=50, verbose_name='5-е место')
+    club_6 = models.CharField(max_length=50, verbose_name='6-е место')
+    club_7 = models.CharField(max_length=50, verbose_name='7-е место')
+    club_8 = models.CharField(max_length=50, verbose_name='8-е место')
+    club_9 = models.CharField(max_length=50, verbose_name='9-е место')
+    club_10 = models.CharField(max_length=50, verbose_name='10-е место')
+
 
     def __str__(self):
-        return "{} {} {} {} {} {} {} {} {} {} {}".format(self.date,self.club_1.name,self.club_2.name,self.club_3.name,self.club_4.name,self.club_5.name,self.club_6.name,self.club_7.name,self.club_8.name,self.club_9.name,self.club_10.name)
+        return "{} {} {} {} {} {} {} {} {} {} {}".format(self.date,self.club_1,self.club_2,self.club_3,self.club_4,self.club_5,self.club_6,self.club_7,self.club_8,self.club_9,self.club_10)

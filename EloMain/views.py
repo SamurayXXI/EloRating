@@ -301,21 +301,77 @@ def calc_W(goals_delta):
 
 def fill_change_position(request):
     dates = OrderedSet()
-    for x in Change.objects.all().order_by('id'):
-        if x.game.date not in dates:
-            dates.add(x.game.date)
+    all_changes = Change.objects.all().order_by('-id')
+    clubs = Club.objects.all().order_by('-rating')
+    rating_list = [[x.name,x.rating] for x in clubs]
+    last_club_list = tuple([x.name for x in clubs][:10])
+    for change in all_changes:
+        print(change.game.date)
+        rating_record = next(x for x in rating_list if x[0] == change.club.name)
+        rating_record[1] = change.rating_after
+        rating_list.sort(key=lambda x: -x[1])
+        club_list = tuple([x[0] for x in rating_list][:10])
 
-    for date in dates:
-        changes = Change.objects.all().filter(game__date__lte=date).order_by('-rating_after').distinct()[:10]
-        if len(changes)<10:
-            continue
+        if club_list!=last_club_list:
+            print("club list {}".format(club_list))
+            print("Save")
+            position = Position()
+            position.date = change.game.date
+            position.club_1 = club_list[0]
+            position.club_2 = club_list[1]
+            position.club_3 = club_list[2]
+            position.club_4 = club_list[3]
+            position.club_5 = club_list[4]
+            position.club_6 = club_list[5]
+            position.club_7 = club_list[6]
+            position.club_8 = club_list[7]
+            position.club_9 = club_list[8]
+            position.club_10 = club_list[9]
 
-        print(type(changes[0].club))
+            position.save()
 
-        position = Position(date,changes[0].club,changes[1].club,changes[2].club,changes[3].club,changes[4].club,changes[5].club,changes[6].club,changes[7].club,changes[8].club,changes[9].club)
-        print(position)
-        position.save()
+            last_club_list = club_list
 
+    # for x in all_changes.filter(game__date__gte="2010-06-01").order_by('id'):
+    #     print(x.id)
+    #     if x.game.date not in dates:
+    #         dates.add(x.game.date)
 
+    # all_changes_ordered = all_changes.order_by('-rating_after')
+    # last_position = None
+    # for date in dates:
+    #     i = 0
+    #     club_list = []
+    #     rating_list = []
+    #
+    #     for change in all_changes.filter(game__date__lte=date).iterator():
+    #         if change.club.name not in club_list:
+    #             club_list.append(change.club.name)
+    #             rating_list.append((change.club.name,change.rating_after))
+    #
+    #     rating_list = sorted(rating_list, key=lambda x: -x[1])[:10]
+    #
+    #     club_list = [x[0] for x in rating_list]
+    #     print(date)
+    #     print(club_list)
+    #
+    #     if tuple(club_list)!=last_position:
+    #         print("Save")
+    #         position = Position()
+    #         position.date = date
+    #         position.club_1 = club_list[0]
+    #         position.club_2 = club_list[1]
+    #         position.club_3 = club_list[2]
+    #         position.club_4 = club_list[3]
+    #         position.club_5 = club_list[4]
+    #         position.club_6 = club_list[5]
+    #         position.club_7 = club_list[6]
+    #         position.club_8 = club_list[7]
+    #         position.club_9 = club_list[8]
+    #         position.club_10 = club_list[9]
+    #
+    #         position.save()
+    #
+    #         last_position = tuple(club_list)
 
     return HttpResponse(dates)
