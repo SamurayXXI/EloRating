@@ -19,4 +19,7 @@ urlpatterns = [
     path('get_chart', views.get_chart),
     path('charts', views.charts),
     path('fill_change_position', views.fill_change_position),
+    path('get_position_charts', views.get_position_chart),
+    path('position_charts', views.position_charts),
+    path('position_continuity', views.position_continuity),
 ]

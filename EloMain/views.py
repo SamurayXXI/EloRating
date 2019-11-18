@@ -1,11 +1,14 @@
 from datetime import datetime
-from django.db.models import Q
+import operator
 
+from django.db.models import Q
+from collections import OrderedDict
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils.datastructures import OrderedSet
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
+from sortedcontainers.sorteddict import SortedDict
 
 from .models import Championship, Game, Club, Change, Position
 
@@ -22,6 +25,9 @@ def show_rating_by_champ(request, champ_id):
 
 def charts(request):
     return render(request, 'EloMain/charts.html')
+
+def position_charts(request):
+    return render(request, 'EloMain/position_charts.html')
 
 def show_country_rating(request):
     tourns = Championship.objects.filter(elo_index=30)
@@ -58,6 +64,59 @@ def top_rating_ever(request):
     print(top)
 
     return render(request, 'EloMain/top_rating_ever.html', locals())
+
+def position_continuity(request):
+    time = {}
+    i = 0
+    positions = Position.objects.filter(date__gte='2010-06-01').order_by('date')
+    while i<len(positions)-1:
+        if positions[i].club_1 == positions[i+1].club_1:
+            if positions[i].club_1 not in time:
+                time[positions[i].club_1] = positions[i+1].date - positions[i].date
+            else:
+                time[positions[i].club_1]+= positions[i+1].date - positions[i].date
+        else:
+            if positions[i].club_1 not in time:
+                time[positions[i].club_1] = positions[i+1].date - positions[i].date - datetime.timedelta(days=1)
+            else:
+                time[positions[i].club_1]+= positions[i+1].date - positions[i].date - datetime.timedelta(days=1)
+        i+=1
+
+    time_sorted = sorted(time.items(), key=lambda kv: -kv[1])
+
+    return render(request, 'EloMain/top_places.html', locals())
+
+def get_position_chart(request):
+    club_name = 'Реал Мадрид'
+    string = ''
+    first_places = []
+    positions = Position.objects.all().order_by('date')
+    for position in positions:
+        if position.club_1 not in first_places:
+            first_places.append(position.club_1)
+        if position.club_1 == club_name:
+            string += '[new Date({},{},{}), {}],'.format(position.date.year,position.date.month, position.date.day, 1)
+        elif position.club_2 == club_name:
+            string += '[new Date({},{},{}), {}],'.format(position.date.year,position.date.month, position.date.day, 2)
+        elif position.club_3 == club_name:
+            string += '[new Date({},{},{}), {}],'.format(position.date.year,position.date.month, position.date.day, 3)
+        elif position.club_4 == club_name:
+            string += '[new Date({},{},{}), {}],'.format(position.date.year,position.date.month, position.date.day, 4)
+        elif position.club_5 == club_name:
+            string += '[new Date({},{},{}), {}],'.format(position.date.year,position.date.month, position.date.day, 5)
+        elif position.club_6 == club_name:
+            string += '[new Date({},{},{}), {}],'.format(position.date.year,position.date.month, position.date.day, 6)
+        elif position.club_7 == club_name:
+            string += '[new Date({},{},{}), {}],'.format(position.date.year,position.date.month, position.date.day, 7)
+        elif position.club_8 == club_name:
+            string += '[new Date({},{},{}), {}],'.format(position.date.year,position.date.month, position.date.day, 8)
+        elif position.club_10 == club_name:
+            string += '[new Date({},{},{}), {}],'.format(position.date.year,position.date.month, position.date.day, 10)
+        else:
+            string += '[new Date({},{},{}), {}],'.format(position.date.year, position.date.month, position.date.day, 11)
+
+    print(first_places)
+    return HttpResponse(string)
 
 def get_chart(request):
     club_names = ('Ливерпуль','Бавария', 'Барселона')
@@ -126,10 +185,11 @@ def fill_national(request):
 
 def fill_lc(request):
 
-    russian_champ = Championship.objects.get(name='Лига Чемпионов Группы')
+    russian_champ = Championship.objects.get(name='Лига Европы Группы')
     russian_link = russian_champ.link
 
-    driver = webdriver.Chrome('/home/lenkov/disk/work/chromedriver_linux64/chromedriver')
+    driver = webdriver.Chrome('/Users/leonid/Documents/work/chromedriver')
+    # driver = webdriver.Chrome('/home/lenkov/disk/work/chromedriver_linux64/chromedriver')
     # driver = webdriver.Chrome('/home/leonid/chromedriver_linux64/chromedriver')
 
     driver.get(russian_link)
@@ -331,47 +391,5 @@ def fill_change_position(request):
             position.save()
 
             last_club_list = club_list
-
-    # for x in all_changes.filter(game__date__gte="2010-06-01").order_by('id'):
-    #     print(x.id)
-    #     if x.game.date not in dates:
-    #         dates.add(x.game.date)
-
-    # all_changes_ordered = all_changes.order_by('-rating_after')
-    # last_position = None
-    # for date in dates:
-    #     i = 0
-    #     club_list = []
-    #     rating_list = []
-    #
-    #     for change in all_changes.filter(game__date__lte=date).iterator():
-    #         if change.club.name not in club_list:
-    #             club_list.append(change.club.name)
-    #             rating_list.append((change.club.name,change.rating_after))
-    #
-    #     rating_list = sorted(rating_list, key=lambda x: -x[1])[:10]
-    #
-    #     club_list = [x[0] for x in rating_list]
-    #     print(date)
-    #     print(club_list)
-    #
-    #     if tuple(club_list)!=last_position:
-    #         print("Save")
-    #         position = Position()
-    #         position.date = date
-    #         position.club_1 = club_list[0]
-    #         position.club_2 = club_list[1]
-    #         position.club_3 = club_list[2]
-    #         position.club_4 = club_list[3]
-    #         position.club_5 = club_list[4]
-    #         position.club_6 = club_list[5]
-    #         position.club_7 = club_list[6]
-    #         position.club_8 = club_list[7]
-    #         position.club_9 = club_list[8]
-    #         position.club_10 = club_list[9]
-    #
-    #         position.save()
-    #
-    #         last_position = tuple(club_list)
 
     return HttpResponse(dates)
