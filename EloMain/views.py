@@ -141,11 +141,12 @@ def get_chart(request):
 
 def fill_national(request):
 
-    russian_champ = Championship.objects.get(name='Украина')
+    russian_champ = Championship.objects.get(name='Австрия')
     russian_link = russian_champ.link
 
+    driver = webdriver.Chrome('/Users/leonid/Documents/work/chromedriver')
     # driver = webdriver.Chrome('/home/leonid/chromedriver_linux64/chromedriver')
-    driver = webdriver.Chrome('/home/lenkov/disk/work/chromedriver_linux64/chromedriver')
+    # driver = webdriver.Chrome('/home/lenkov/disk/work/chromedriver_linux64/chromedriver')
     driver.get(russian_link)
 
     print(0)
