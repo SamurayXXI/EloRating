@@ -1,3 +1,4 @@
+from asyncio import sleep
 from datetime import datetime
 import operator
 
@@ -141,6 +142,58 @@ def get_chart(request):
             last_bars = change.rating_after
     print(script)
     return HttpResponse(script)
+
+def fill_last_matches(request):
+    driver = webdriver.Chrome('/Users/leonid/Documents/work/chromedriver')
+    # driver = webdriver.Chrome('/home/leonid/chromedriver_linux64/chromedriver')
+    # driver = webdriver.Chrome('/home/lenkov/disk/work/chromedriver_linux64/chromedriver')
+
+    log = ''
+    date_str = '01.11.19'
+    filter_date = datetime.strptime(date_str, "%d.%m.%y")
+
+    champs = Championship.objects.all()
+    for champ in champs:
+
+        driver.get(champ.link)
+
+        def check_enter(driver):
+            enter = driver.find_elements_by_xpath("//div[@class='live_comptt_bd' and ./div[@class='block_header']]//div[@class='game_block']//a")
+            return len(enter) > 7
+
+        WebDriverWait(driver, 5, 0.1).until(check_enter)
+        sleep(0.5)
+        
+        matches = driver.find_elements_by_xpath(
+            "//div[@class='live_comptt_bd' and ./div[@class='block_header']]//div[@class='game_block']//a")
+        for match in matches:
+            try:
+                match_id = match.get_attribute('dt-id')
+                date = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='game_ht']//div[@class='game_start']//span".format(match_id)).text
+                home_team = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='game_ht']//div[@class='game_team']//span".format(match_id)).text
+                home_score = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='game_ht']//div[@class='game_goals']//span".format(match_id)).text
+                away_score = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='game_at']//div[@class='game_goals']//span".format(match_id)).text
+                away_team = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='game_at']//div[@class='game_team']//span".format(match_id)).text
+            except Exception as e:
+                print(e)
+                continue
+
+            print("{} {} {}-{} {}".format(date, home_team, home_score, away_score, away_team))
+
+
+            try:
+                date1 = datetime.strptime(date, "%d.%m.%y")
+            except Exception as e:
+                print(e)
+                continue
+
+            if date1 < filter_date:
+                break
+
+            if not Game.objects.filter(date=date1, home_team__name=home_team, away_team__name=away_team).exists():
+                print("Save")
+
+    return HttpResponse('Done')
 
 def fill_national(request):
 

@@ -23,4 +23,5 @@ urlpatterns = [
     path('position_charts', views.position_charts),
     path('position_continuity', views.position_continuity),
     path('panel',views.panel),
+    path('last_matches_fill', views.fill_last_matches),
 ]
