@@ -23,6 +23,9 @@ def show_rating_by_champ(request, champ_id):
     clubs = Club.objects.filter(championship__id=champ_id).order_by('-rating')
     return render(request, 'EloMain/rating.html', locals())
 
+def panel(request):
+    return render(request, 'EloMain/panel.html')
+
 def charts(request):
     return render(request, 'EloMain/charts.html')
 
