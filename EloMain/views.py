@@ -149,6 +149,7 @@ def fill_last_matches(request):
     # driver = webdriver.Chrome('/home/lenkov/disk/work/chromedriver_linux64/chromedriver')
 
     log = ''
+    counter = 0
     date_str = '01.11.19'
     filter_date = datetime.strptime(date_str, "%d.%m.%y")
 
@@ -191,7 +192,42 @@ def fill_last_matches(request):
                 break
 
             if not Game.objects.filter(date=date1, home_team__name=home_team, away_team__name=away_team).exists():
-                print("Save")
+                home_team_obj = Club.objects.get(name=home_team)
+                away_team_obj = Club.objects.get(name=away_team)
+                game = Game(date=date1.strftime("%Y-%m-%d"), home_team=home_team_obj, away_team=away_team_obj,
+                            home_score=int(home_score), away_score=int(away_score), tournament=champ)
+                # game.save()
+
+                index = game.tournament.elo_index
+
+                home_team = game.home_team
+                away_team = game.away_team
+                ht_score = game.home_score
+                at_score = game.away_score
+
+                ht_rating = home_team.rating
+                at_rating = away_team.rating
+
+                delta = calc_rating_delta(ht_rating, at_rating, ht_score, at_score, index)
+
+                home_team.rating = ht_rating + delta
+                away_team.rating = at_rating - delta
+
+                # home_team.save()
+                # away_team.save()
+
+                change_h = Change(game=game, club=home_team, rating_before=ht_rating, rating_after=home_team.rating,
+                                  rating_delta=delta)
+                change_a = Change(game=game, club=away_team, rating_before=at_rating, rating_after=away_team.rating,
+                                  rating_delta=-delta)
+
+                # change_h.save()
+                # change_a.save()
+
+                counter += 1
+
+
+    print("Добавлено {} матчей".format(counter))
 
     return HttpResponse('Done')
 
