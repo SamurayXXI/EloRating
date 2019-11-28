@@ -9,7 +9,6 @@ from django.shortcuts import render
 from django.utils.datastructures import OrderedSet
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
-from sortedcontainers.sorteddict import SortedDict
 
 from .models import Championship, Game, Club, Change, Position
 
@@ -144,13 +143,13 @@ def get_chart(request):
     return HttpResponse(script)
 
 def fill_last_matches(request):
-    driver = webdriver.Chrome('/Users/leonid/Documents/work/chromedriver')
+    # driver = webdriver.Chrome('/Users/leonid/Documents/work/chromedriver')
     # driver = webdriver.Chrome('/home/leonid/chromedriver_linux64/chromedriver')
-    # driver = webdriver.Chrome('/home/lenkov/disk/work/chromedriver_linux64/chromedriver')
+    driver = webdriver.Chrome('/home/lenkov/disk/work/chromedriver_linux64/chromedriver')
 
     log = ''
     counter = 0
-    date_str = '01.11.19'
+    date_str = '25.11.19'
     filter_date = datetime.strptime(date_str, "%d.%m.%y")
 
     champs = Championship.objects.all()
@@ -159,14 +158,15 @@ def fill_last_matches(request):
         driver.get(champ.link)
 
         def check_enter(driver):
-            enter = driver.find_elements_by_xpath("//div[@class='live_comptt_bd' and ./div[@class='block_header']]//div[@class='game_block']//a")
+            enter = driver.find_elements_by_xpath("//div[@class='live_comptt_bd']//div[@class='game_block']//a")
+            print("len enter {}".format(len(enter)))
             return len(enter) > 7
 
-        WebDriverWait(driver, 5, 0.1).until(check_enter)
+        WebDriverWait(driver, 15, 0.1).until(check_enter)
         sleep(0.5)
         
         matches = driver.find_elements_by_xpath(
-            "//div[@class='live_comptt_bd' and ./div[@class='block_header']]//div[@class='game_block']//a")
+            "//div[@class='live_comptt_bd']//div[@class='game_block']//a")
         for match in matches:
             try:
                 match_id = match.get_attribute('dt-id')
@@ -196,7 +196,7 @@ def fill_last_matches(request):
                 away_team_obj = Club.objects.get(name=away_team)
                 game = Game(date=date1.strftime("%Y-%m-%d"), home_team=home_team_obj, away_team=away_team_obj,
                             home_score=int(home_score), away_score=int(away_score), tournament=champ)
-                # game.save()
+                game.save()
 
                 index = game.tournament.elo_index
 
@@ -213,17 +213,17 @@ def fill_last_matches(request):
                 home_team.rating = ht_rating + delta
                 away_team.rating = at_rating - delta
 
-                # home_team.save()
-                # away_team.save()
+                home_team.save()
+                away_team.save()
 
                 change_h = Change(game=game, club=home_team, rating_before=ht_rating, rating_after=home_team.rating,
                                   rating_delta=delta)
                 change_a = Change(game=game, club=away_team, rating_before=at_rating, rating_after=away_team.rating,
                                   rating_delta=-delta)
 
-                # change_h.save()
-                # change_a.save()
-
+                change_h.save()
+                change_a.save()
+                print("Save")
                 counter += 1
 
 
