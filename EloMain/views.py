@@ -144,13 +144,16 @@ def get_chart(request):
 
 def fill_last_matches(request):
     # driver = webdriver.Chrome('/Users/leonid/Documents/work/chromedriver')
-    # driver = webdriver.Chrome('/home/leonid/chromedriver_linux64/chromedriver')
-    driver = webdriver.Chrome('/home/lenkov/disk/work/chromedriver_linux64/chromedriver')
+    driver = webdriver.Chrome('/home/leonid/chromedriver_linux64/chromedriver')
+    # driver = webdriver.Chrome('/home/lenkov/disk/work/chromedriver_linux64/chromedriver')
 
     log = ''
     counter = 0
     date_str = '25.11.19'
     filter_date = datetime.strptime(date_str, "%d.%m.%y")
+
+    date_str2 = '25.11.29'
+    filter_date2 = datetime.strptime(date_str2, "%d.%m.%y")
 
     champs = Championship.objects.all()
     for champ in champs:
@@ -189,6 +192,9 @@ def fill_last_matches(request):
                 continue
 
             if date1 < filter_date:
+                break
+
+            if date1 > filter_date2:
                 break
 
             if not Game.objects.filter(date=date1, home_team__name=home_team, away_team__name=away_team).exists():
