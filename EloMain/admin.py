@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
+from .filters import LastMonthFilter
 from .models import Championship, Club, Game, Change, Position
 
 
@@ -15,6 +16,7 @@ class GameAdmin(admin.ModelAdmin):
 
 class ChangeAdmin(admin.ModelAdmin):
     search_fields = ('club__name',)
+    list_filter = (LastMonthFilter,)
     list_display = ('game', 'club','rating_delta', 'rating_before', 'rating_after')
 
 admin.site.register(Championship)

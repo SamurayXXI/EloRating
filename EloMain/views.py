@@ -1,5 +1,5 @@
 from asyncio import sleep
-from datetime import datetime
+from datetime import datetime, date
 import operator
 
 from django.db.models import Q
@@ -67,6 +67,23 @@ def top_rating_ever(request):
     print(top)
 
     return render(request, 'EloMain/top_rating_ever.html', locals())
+
+def month_rating(request):
+    date1 = date.today()
+    changes = Change.objects.all().filter(rating_after__gte=1100).filter(game__date__gte=date(date1.year,date1.month-1,1),
+                                       game__date__lt=date(date1.year,date1.month,1))
+    clubs = {}
+    for change in changes:
+        if not change.club in clubs:
+            clubs[change.club] = change.rating_delta
+        else:
+            clubs[change.club] += change.rating_delta
+    clubs = [(k,clubs[k]) for k in sorted(clubs, key=clubs.get, reverse=True)]
+    print(clubs)
+    # for club in clubs:
+        # print(club.name, clubs[club])
+
+    return render(request, 'EloMain/month_rating.html', locals())
 
 def position_continuity(request):
     time = {}
@@ -144,8 +161,8 @@ def get_chart(request):
 
 def fill_last_matches(request):
     # driver = webdriver.Chrome('/Users/leonid/Documents/work/chromedriver')
-    driver = webdriver.Chrome('/home/leonid/chromedriver_linux64/chromedriver')
-    # driver = webdriver.Chrome('/home/lenkov/disk/work/chromedriver_linux64/chromedriver')
+    # driver = webdriver.Chrome('/home/leonid/chromedriver_linux64/chromedriver')
+    driver = webdriver.Chrome('/home/lenkov/disk/work/chromedriver_linux64/chromedriver')
 
     log = ''
     counter = 0
