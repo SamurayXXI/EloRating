@@ -450,7 +450,7 @@ def calc(request):
 def calc_rating_delta(own_rating, rival_rating, own_score, rival_score, index):
     goals_delta = own_score - rival_score
     rating_delta = own_rating - rival_rating
-    return round(index*calc_G(goals_delta)*(calc_W(goals_delta) - calc_We(rating_delta)),2)
+    return round(index*calc_G(goals_delta)*(calc_W(goals_delta) - calc_We(rating_delta)),0)
 
 def calc_G(goals_delta):
     goals_delta = abs(goals_delta)
