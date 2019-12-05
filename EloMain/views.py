@@ -36,7 +36,7 @@ def show_country_rating(request):
     tourns = Championship.objects.filter(elo_index=30)
     champs = []
     for champ in tourns:
-        clubs = Club.objects.filter(championship=champ).order_by('-rating')
+        clubs = Club.objects.filter(championship=champ).order_by('-rating').filter(~Q(name='Москва'))
         clubs = clubs[:10]
         total = 0
         for club in clubs:
@@ -166,7 +166,7 @@ def fill_last_matches(request):
 
     log = ''
     counter = 0
-    date_str = '30.11.19'
+    date_str = '1.12.19'
     filter_date = datetime.strptime(date_str, "%d.%m.%y")
 
     date_str2 = '25.11.29'

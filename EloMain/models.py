@@ -37,8 +37,8 @@ class Game(models.Model):
 
     date = models.DateField(verbose_name='Дата')
     tournament = models.ForeignKey(Championship, on_delete=models.CASCADE, related_name='tournament', verbose_name='Турнир', default=-1)
-    home_team = models.ForeignKey(Club, on_delete=models.CASCADE, related_name='home_team', verbose_name='Хозяева')
-    away_team = models.ForeignKey(Club, on_delete=models.CASCADE, related_name='away_team', verbose_name='Гости')
+    home_team = models.ForeignKey(Club, on_delete=models.DO_NOTHING, related_name='home_team', verbose_name='Хозяева', blank=True, null=True)
+    away_team = models.ForeignKey(Club, on_delete=models.DO_NOTHING, related_name='away_team', verbose_name='Гости', blank=True, null=True)
     home_score = models.IntegerField(verbose_name='Забили хозяева')
     away_score = models.IntegerField(verbose_name='Забили гости')
 
@@ -52,7 +52,7 @@ class Change(models.Model):
         verbose_name_plural = 'Изменения рейтинга'
 
     game = models.ForeignKey(Game, on_delete=models.DO_NOTHING, related_name='game', verbose_name='Игра')
-    club = models.ForeignKey(Club, on_delete=models.DO_NOTHING, related_name='club', verbose_name='Клуб')
+    club = models.ForeignKey(Club, on_delete=models.DO_NOTHING, related_name='club', verbose_name='Клуб', blank=True, null=True)
     rating_before = models.IntegerField(verbose_name='Рейтинг до')
     rating_after = models.IntegerField(verbose_name='Рейтинг после')
     rating_delta = models.IntegerField(verbose_name='Дельта')
