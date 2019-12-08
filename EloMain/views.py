@@ -85,6 +85,24 @@ def month_rating(request):
 
     return render(request, 'EloMain/month_rating.html', locals())
 
+def year_rating(request):
+    year = 2019
+    changes = Change.objects.all().filter(game__date__gte=date(year,1,1),
+                                       game__date__lte=date(year,12,31))
+    clubs = {}
+    for change in changes:
+        if not change.club in clubs:
+            clubs[change.club] = change.rating_delta
+        else:
+            clubs[change.club] += change.rating_delta
+    clubs = [(k,clubs[k]) for k in sorted(clubs, key=clubs.get, reverse=True)]
+    print(clubs)
+    # for club in clubs:
+        # print(club.name, clubs[club])
+
+    return render(request, 'EloMain/year_rating.html', locals())
+
+
 def position_continuity(request):
     time = {}
     i = 0
@@ -162,7 +180,8 @@ def get_chart(request):
 def fill_last_matches(request):
     # driver = webdriver.Chrome('/Users/leonid/Documents/work/chromedriver')
     # driver = webdriver.Chrome('/home/leonid/chromedriver_linux64/chromedriver')
-    driver = webdriver.Chrome('/home/lenkov/disk/work/chromedriver_linux64/chromedriver')
+    # driver = webdriver.Chrome('/home/lenkov/disk/work/chromedriver_linux64/chromedriver')
+    driver = webdriver.Chrome('/home/dl/chromedriver_linux64/chromedriver')
 
     log = ''
     counter = 0
