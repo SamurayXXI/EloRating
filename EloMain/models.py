@@ -54,7 +54,7 @@ class Change(models.Model):
     game = models.ForeignKey(Game, on_delete=models.DO_NOTHING, related_name='game', verbose_name='Игра')
     club = models.ForeignKey(Club, on_delete=models.DO_NOTHING, related_name='club', verbose_name='Клуб', blank=True, null=True)
     rating_before = models.IntegerField(verbose_name='Рейтинг до')
-    rating_after = models.IntegerField(verbose_name='Рейтинг после')
+    rating_after = models.IntegerField(verbose_name='Рейтинг после', db_index=True)
     rating_delta = models.IntegerField(verbose_name='Дельта')
 
     def __str__(self):

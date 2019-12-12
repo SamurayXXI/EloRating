@@ -1,3 +1,4 @@
+import time
 from asyncio import sleep
 from datetime import datetime, date
 import operator
@@ -54,6 +55,7 @@ def top_delta(request):
     return render(request, 'EloMain/top_changes.html', locals())
 
 def top_rating_ever(request):
+    start_time = time.time()
     changes = Change.objects.all().order_by('-rating_after')
     used_clubs = []
     top = []
@@ -64,7 +66,7 @@ def top_rating_ever(request):
             top.append(change)
             used_clubs.append(change.club)
         i+=1
-    print(top)
+    print("Time elapsed: {}".format(time.time()-start_time))
 
     return render(request, 'EloMain/top_rating_ever.html', locals())
 
