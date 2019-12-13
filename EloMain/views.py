@@ -88,17 +88,22 @@ def month_rating(request):
     return render(request, 'EloMain/month_rating.html', locals())
 
 def year_rating(request):
+    start_time = time.time()
     year = 2019
     changes = Change.objects.all().filter(game__date__gte=date(year,1,1),
                                        game__date__lte=date(year,12,31))
+    print("Time elapsed: {}".format(time.time() - start_time))
+    start_time = time.time()
     clubs = {}
     for change in changes:
         if not change.club in clubs:
             clubs[change.club] = change.rating_delta
         else:
             clubs[change.club] += change.rating_delta
+    print("Time elapsed: {}".format(time.time() - start_time))
+    start_time = time.time()
     clubs = [(k,clubs[k]) for k in sorted(clubs, key=clubs.get, reverse=True)]
-    print(clubs)
+    print("Time elapsed: {}".format(time.time()-start_time))
     # for club in clubs:
         # print(club.name, clubs[club])
 
