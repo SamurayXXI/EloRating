@@ -192,7 +192,7 @@ def fill_last_matches(request):
 
     log = ''
     counter = 0
-    date_str = '9.12.19'
+    date_str = '15.12.19'
     filter_date = datetime.strptime(date_str, "%d.%m.%y")
 
     date_str2 = '25.11.29'
