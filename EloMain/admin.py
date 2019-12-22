@@ -16,6 +16,7 @@ class GameAdmin(admin.ModelAdmin):
 class ChangeAdmin(admin.ModelAdmin):
     search_fields = ('club__name',)
     list_display = ('game', 'club','rating_delta', 'rating_before', 'rating_after')
+    list_filter = ('game__date',)
 
 admin.site.register(Championship)
 admin.site.register(Club, ClubAdmin)
