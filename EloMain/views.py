@@ -72,8 +72,8 @@ def top_rating_ever(request):
 
 def month_rating(request):
     date1 = date.today()
-    changes = Change.objects.all().filter(rating_after__gte=1100).filter(game__date__gte=date(date1.year,date1.month-1,1),
-                                       game__date__lt=date(date1.year,date1.month,1))
+    changes = Change.objects.all().filter(rating_after__gte=1100).filter(game__date__gte=date(date1.year,date1.month,1),
+                                       game__date__lt=date(date1.year,date1.month,31))
     clubs = {}
     for change in changes:
         if not change.club in clubs:
@@ -186,13 +186,13 @@ def get_chart(request):
 
 def fill_last_matches(request):
     # driver = webdriver.Chrome('/Users/leonid/Documents/work/chromedriver')
-    driver = webdriver.Chrome('/home/leonid/chromedriver_linux64/chromedriver')
-    # driver = webdriver.Chrome('/home/lenkov/disk/work/chromedriver_linux64/chromedriver')
+    # driver = webdriver.Chrome('/home/leonid/chromedriver_linux64/chromedriver')
+    driver = webdriver.Chrome('/home/lenkov/disk/work/chromedriver_linux64/chromedriver')
     # driver = webdriver.Chrome('/home/dl/chromedriver_linux64/chromedriver')
 
     log = ''
     counter = 0
-    date_str = '15.12.19'
+    date_str = '21.12.19'
     filter_date = datetime.strptime(date_str, "%d.%m.%y")
 
     date_str2 = '25.11.29'
