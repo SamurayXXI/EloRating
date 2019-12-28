@@ -216,11 +216,11 @@ def fill_last_matches(request):
         for match in matches:
             try:
                 match_id = match.get_attribute('dt-id')
-                date = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='game_ht']//div[@class='game_start']//span".format(match_id)).text
-                home_team = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='game_ht']//div[@class='game_team']//span".format(match_id)).text
-                home_score = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='game_ht']//div[@class='game_goals']//span".format(match_id)).text
-                away_score = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='game_at']//div[@class='game_goals']//span".format(match_id)).text
-                away_team = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='game_at']//div[@class='game_team']//span".format(match_id)).text
+                date = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='status']//span".format(match_id)).text
+                home_team = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='ht']//div[@class='name']//span".format(match_id)).text
+                home_score = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='ht']//div[@class='gls']".format(match_id)).text
+                away_score = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='at']//div[@class='gls']".format(match_id)).text
+                away_team = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='at']//div[@class='name']//span".format(match_id)).text
             except Exception as e:
                 print(e)
                 continue
@@ -294,13 +294,15 @@ def fill_national(request):
 
     i = 1
 
-    while len(driver.find_elements_by_xpath("//div[@class='live_comptt_bd' and ./div[@class='block_header' and text()='{}-й тур']]".format(i)))>0:
+    while len(driver.find_elements_by_xpath("//div[@class='live_comptt_bd'  and .//div[@class='cmp_stg_ttl' and text()='{}-й тур']]".format(i)))>0:
         print("Tour {}".format(i))
-        matches = driver.find_elements_by_xpath("//div[@class='live_comptt_bd' and ./div[@class='block_header' and text()='{}-й тур']]//div[@class='game_block']//a".format(i))
+        matches = driver.find_elements_by_xpath("//div[@class='live_comptt_bd'  and .//div[@class='cmp_stg_ttl' and text()='{}-й тур']]//div[@class='game_block']//a".format(i))
 
         for match in matches:
             match_id = match.get_attribute('dt-id')
-            date = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='game_ht']//div[@class='game_start']//span".format(match_id)).text
+            date = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='status']//span".format(match_id)).text
+            print(date)
+            return
             home_team = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='game_ht']//div[@class='game_team']//span".format(match_id)).text
             home_score = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='game_ht']//div[@class='game_goals']//span".format(match_id)).text
             away_score = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='game_at']//div[@class='game_goals']//span".format(match_id)).text
