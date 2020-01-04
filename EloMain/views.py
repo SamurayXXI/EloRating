@@ -11,7 +11,11 @@ from django.utils.datastructures import OrderedSet
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 
+from EloMain import fillers
+from EloMain.calculator.rating_delta import calc_rating_delta
 from .models import Championship, Game, Club, Change, Position
+from .view_module import show_rating as show_rate
+from .fillers import last_matches as last_matches_filler
 
 
 # Create your views here.
@@ -50,7 +54,7 @@ def show_country_rating(request):
     return render(request, 'EloMain/country_rating.html', locals())
 
 def top_delta(request):
-    changes = Change.objects.all().order_by('-rating_delta')
+    changes = Change.objects.filter(game__date__year=2019).order_by('-rating_delta')
     changes = changes[:5]
     return render(request, 'EloMain/top_changes.html', locals())
 
@@ -71,43 +75,10 @@ def top_rating_ever(request):
     return render(request, 'EloMain/top_rating_ever.html', locals())
 
 def month_rating(request):
-    date1 = date.today()
-    changes = Change.objects.all().filter(rating_after__gte=1100).filter(game__date__gte=date(date1.year,date1.month,1),
-                                       game__date__lt=date(date1.year,date1.month,31))
-    clubs = {}
-    for change in changes:
-        if not change.club in clubs:
-            clubs[change.club] = change.rating_delta
-        else:
-            clubs[change.club] += change.rating_delta
-    clubs = [(k,clubs[k]) for k in sorted(clubs, key=clubs.get, reverse=True)]
-    print(clubs)
-    # for club in clubs:
-        # print(club.name, clubs[club])
-
-    return render(request, 'EloMain/month_rating.html', locals())
+    return show_rate.month_rating(request)
 
 def year_rating(request):
-    start_time = time.time()
-    year = 2019
-    changes = Change.objects.all().filter(game__date__gte=date(year,1,1),
-                                       game__date__lte=date(year,12,31))
-    print("Time elapsed: {}".format(time.time() - start_time))
-    start_time = time.time()
-    clubs = {}
-    for change in changes:
-        if not change.club in clubs:
-            clubs[change.club] = change.rating_delta
-        else:
-            clubs[change.club] += change.rating_delta
-    print("Time elapsed: {}".format(time.time() - start_time))
-    start_time = time.time()
-    clubs = [(k,clubs[k]) for k in sorted(clubs, key=clubs.get, reverse=True)]
-    print("Time elapsed: {}".format(time.time()-start_time))
-    # for club in clubs:
-        # print(club.name, clubs[club])
-
-    return render(request, 'EloMain/year_rating.html', locals())
+    return show_rate.year_rating(request)
 
 
 def position_continuity(request):
@@ -185,100 +156,7 @@ def get_chart(request):
     return HttpResponse(script)
 
 def fill_last_matches(request):
-    # driver = webdriver.Chrome('/Users/leonid/Documents/work/chromedriver')
-    driver = webdriver.Chrome('/home/leonid/chromedriver_linux64/chromedriver')
-    # driver = webdriver.Chrome('/home/lenkov/disk/work/chromedriver_linux64/chromedriver')
-    # driver = webdriver.Chrome('/home/dl/chromedriver_linux64/chromedriver')
-
-    log = ''
-    counter = 0
-    date_str = '21.12.19'
-    filter_date = datetime.strptime(date_str, "%d.%m.%y")
-
-    date_str2 = '25.11.29'
-    filter_date2 = datetime.strptime(date_str2, "%d.%m.%y")
-
-    champs = Championship.objects.all()
-    for champ in champs:
-
-        driver.get(champ.link)
-
-        def check_enter(driver):
-            enter = driver.find_elements_by_xpath("//div[@class='live_comptt_bd']//div[@class='game_block']//a")
-            print("len enter {}".format(len(enter)))
-            return len(enter) > 7
-
-        WebDriverWait(driver, 15, 0.1).until(check_enter)
-        sleep(0.5)
-        
-        matches = driver.find_elements_by_xpath(
-            "//div[@class='live_comptt_bd']//div[@class='game_block']//a")
-        for match in matches:
-            try:
-                match_id = match.get_attribute('dt-id')
-                date = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='status']//span".format(match_id)).text
-                home_team = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='ht']//div[@class='name']//span".format(match_id)).text
-                home_score = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='ht']//div[@class='gls']".format(match_id)).text
-                away_score = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='at']//div[@class='gls']".format(match_id)).text
-                away_team = match.find_element_by_xpath("//a[@dt-id={}]//div[@class='at']//div[@class='name']//span".format(match_id)).text
-            except Exception as e:
-                print(e)
-                continue
-
-            print("{} {} {}-{} {}".format(date, home_team, home_score, away_score, away_team))
-
-
-            try:
-                date1 = datetime.strptime(date, "%d.%m.%y")
-            except Exception as e:
-                print(e)
-                continue
-
-            if date1 < filter_date:
-                break
-
-            if date1 > filter_date2:
-                break
-
-            if not Game.objects.filter(date=date1, home_team__name=home_team, away_team__name=away_team).exists():
-                home_team_obj = Club.objects.get(name=home_team)
-                away_team_obj = Club.objects.get(name=away_team)
-                game = Game(date=date1.strftime("%Y-%m-%d"), home_team=home_team_obj, away_team=away_team_obj,
-                            home_score=int(home_score), away_score=int(away_score), tournament=champ)
-                game.save()
-
-                index = game.tournament.elo_index
-
-                home_team = game.home_team
-                away_team = game.away_team
-                ht_score = game.home_score
-                at_score = game.away_score
-
-                ht_rating = home_team.rating
-                at_rating = away_team.rating
-
-                delta = calc_rating_delta(ht_rating, at_rating, ht_score, at_score, index)
-
-                home_team.rating = ht_rating + delta
-                away_team.rating = at_rating - delta
-
-                home_team.save()
-                away_team.save()
-
-                change_h = Change(game=game, club=home_team, rating_before=ht_rating, rating_after=home_team.rating,
-                                  rating_delta=delta)
-                change_a = Change(game=game, club=away_team, rating_before=at_rating, rating_after=away_team.rating,
-                                  rating_delta=-delta)
-
-                change_h.save()
-                change_a.save()
-                print("Save")
-                counter += 1
-
-
-    print("Добавлено {} матчей".format(counter))
-
-    return HttpResponse('Done')
+    return last_matches_filler.fill_last_matches(request)
 
 def fill_national(request):
 
@@ -474,34 +352,6 @@ def calc(request):
     clubs = Club.objects.all().order_by('-rating')
 
     return HttpResponse("Готово")
-
-def calc_rating_delta(own_rating, rival_rating, own_score, rival_score, index):
-    goals_delta = own_score - rival_score
-    rating_delta = own_rating - rival_rating
-    return round(index*calc_G(goals_delta)*(calc_W(goals_delta) - calc_We(rating_delta)),0)
-
-def calc_G(goals_delta):
-    goals_delta = abs(goals_delta)
-
-    if goals_delta<2:
-        return 1.0
-
-    if goals_delta==2:
-        return 1.5
-
-    return (11+goals_delta)/8
-
-def calc_We(rating_delta):
-    power = -rating_delta/400
-    return 1/(10**power + 1)
-
-def calc_W(goals_delta):
-    if goals_delta<0:
-        return 0
-    if goals_delta==0:
-        return 0.5
-    if goals_delta>0:
-        return 1
 
 def fill_change_position(request):
     dates = OrderedSet()
