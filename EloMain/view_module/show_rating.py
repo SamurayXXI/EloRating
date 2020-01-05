@@ -1,6 +1,7 @@
-from datetime import date, time
+import time
+from datetime import date
 from django.shortcuts import render
-from EloMain.models import Change
+from EloMain.models import Change, Championship, Club
 
 
 def month_rating(request):
@@ -19,7 +20,7 @@ def month_rating(request):
 
 def year_rating(request):
     start_time = time.time()
-    year = 2019
+    year = date.today().year
     changes = Change.objects.all().filter(game__date__gte=date(year,1,1),
                                        game__date__lte=date(year,12,31))
     print("Time elapsed: {}".format(time.time() - start_time))
@@ -36,3 +37,40 @@ def year_rating(request):
     print("Time elapsed: {}".format(time.time()-start_time))
 
     return render(request, 'EloMain/year_rating.html', locals())
+
+def show_country_rating(request):
+    tourns = Championship.objects.filter(elo_index=30)
+    champs = []
+    for champ in tourns:
+        clubs = Club.objects.filter(championship=champ).order_by('-rating').filter(~Q(name='Москва'))
+        clubs = clubs[:10]
+        total = 0
+        for club in clubs:
+            total += club.rating
+        champs.append((champ,round(total/10,2),'rating/{}'.format(champ.id)))
+    champs.sort(key=lambda x: -x[1])
+
+    print(champs)
+
+    return render(request, 'EloMain/country_rating.html', locals())
+
+def top_delta(request):
+    changes = Change.objects.filter(game__date__year=2019).order_by('-rating_delta')
+    changes = changes[:5]
+    return render(request, 'EloMain/top_changes.html', locals())
+
+def top_rating_ever(request):
+    start_time = time.time()
+    changes = Change.objects.all().order_by('-rating_after')
+    used_clubs = []
+    top = []
+    i = 0
+    while len(top)<5:
+        change = changes[i]
+        if change.club not in used_clubs:
+            top.append(change)
+            used_clubs.append(change.club)
+        i+=1
+    print("Time elapsed: {}".format(time.time()-start_time))
+
+    return render(request, 'EloMain/top_rating_ever.html', locals())

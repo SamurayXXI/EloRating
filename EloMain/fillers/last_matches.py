@@ -17,7 +17,8 @@ def fill_last_matches(request):
 
     log = ''
     counter = 0
-    date_str = '27.12.19'
+    await_matches = 0
+    date_str = '3.1.20'
     filter_date = datetime.strptime(date_str, "%d.%m.%y")
 
     date_str2 = '25.11.29'
@@ -60,6 +61,7 @@ def fill_last_matches(request):
                 date1 = datetime.strptime(date, "%d.%m.%y")
             except Exception as e:
                 print(e)
+                await_matches += 1
                 continue
 
             if date1 < filter_date:
@@ -103,6 +105,7 @@ def fill_last_matches(request):
                 print("Save")
                 counter += 1
 
-    print("Добавлено {} матчей".format(counter))
+    print("Добавлено матчей: {}".format(counter))
+    print("Матчей в обработке: {}".format(await_matches))
 
     return HttpResponse('Done')

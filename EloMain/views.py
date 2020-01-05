@@ -1,22 +1,16 @@
 import time
-from asyncio import sleep
-from datetime import datetime, date
-import operator
+from datetime import datetime
 
 from django.db.models import Q
-from collections import OrderedDict
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils.datastructures import OrderedSet
 from selenium import webdriver
-from selenium.webdriver.support.wait import WebDriverWait
 
-from EloMain import fillers
 from EloMain.calculator.rating_delta import calc_rating_delta
 from .models import Championship, Game, Club, Change, Position
 from .view_module import show_rating as show_rate
 from .fillers import last_matches as last_matches_filler
-
 
 # Create your views here.
 
@@ -38,41 +32,13 @@ def position_charts(request):
     return render(request, 'EloMain/position_charts.html')
 
 def show_country_rating(request):
-    tourns = Championship.objects.filter(elo_index=30)
-    champs = []
-    for champ in tourns:
-        clubs = Club.objects.filter(championship=champ).order_by('-rating').filter(~Q(name='Москва'))
-        clubs = clubs[:10]
-        total = 0
-        for club in clubs:
-            total += club.rating
-        champs.append((champ,round(total/10,2),'rating/{}'.format(champ.id)))
-    champs.sort(key=lambda x: -x[1])
-
-    print(champs)
-
-    return render(request, 'EloMain/country_rating.html', locals())
+    return show_rate.show_country_rating(request)
 
 def top_delta(request):
-    changes = Change.objects.filter(game__date__year=2019).order_by('-rating_delta')
-    changes = changes[:5]
-    return render(request, 'EloMain/top_changes.html', locals())
+    return show_rate.top_delta(request)
 
 def top_rating_ever(request):
-    start_time = time.time()
-    changes = Change.objects.all().order_by('-rating_after')
-    used_clubs = []
-    top = []
-    i = 0
-    while len(top)<5:
-        change = changes[i]
-        if change.club not in used_clubs:
-            top.append(change)
-            used_clubs.append(change.club)
-        i+=1
-    print("Time elapsed: {}".format(time.time()-start_time))
-
-    return render(request, 'EloMain/top_rating_ever.html', locals())
+    return show_rate.top_rating_ever(request)
 
 def month_rating(request):
     return show_rate.month_rating(request)
