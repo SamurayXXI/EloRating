@@ -1,12 +1,8 @@
 import asyncio
-import time
-from collections import namedtuple
 from datetime import datetime
 from asyncio import sleep
 
-# import requests
-import requests_async as requests
-import uvloop
+import requests
 from bs4 import BeautifulSoup
 from django.http import HttpResponse
 from selenium import webdriver
@@ -15,7 +11,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from EloMain.calculator.rating_delta import calc_rating_delta
 from EloMain.models import Championship, Game, Club, Change
 
-from concurrent.futures import ThreadPoolExecutor, wait, ProcessPoolExecutor
+from concurrent.futures import wait, ProcessPoolExecutor
 
 
 class Stats:
@@ -30,48 +26,6 @@ class Stats:
 def fill_last_matches(request):
     champs = Championship.objects.all()
 
-    # date_str = '3.1.20'
-    # filter_date = datetime.strptime(date_str, "%d.%m.%y")
-    # date_str2 = '25.11.29'
-    # filter_date2 = datetime.strptime(date_str2, "%d.%m.%y")
-    # stats = Stats()
-    # stats.await_matches = 0
-    # stats.counter = 0
-    # stats.filter_date = filter_date
-    # stats.filter_date2 = filter_date2
-
-    # ioloop = uvloop.new_event_loop()
-    # asyncio.set_event_loop(ioloop)
-    # tasks = [ioloop.create_task(fill_championship(champ, stats)) for champ in champs]
-    # wait_tasks = asyncio.wait(tasks)
-    # ioloop.run_until_complete(wait_tasks)
-    # ioloop.close()
-
-
-    group1 = champs[0:4]
-    group2 = champs[4:8]
-    group3 = champs[8:12]
-    group4 = champs[12:16]
-    groups = [group1,group2,group3,group4]
-
-    pool = ProcessPoolExecutor(4)
-    futures = []
-
-    # for champ in champs:
-        # futures.append(pool.submit(fill_championship, champ,stats))
-        # fill_championship(champ, stats)
-
-    for group in groups:
-        futures.append(pool.submit(process_group,group))
-
-    wait(futures)
-
-    # print("await matches: {}".format(stats.await_matches))
-    # print("saved matches: {}".format(stats.counter))
-
-    return HttpResponse('Done')
-
-def process_group(group):
     date_str = '3.1.20'
     filter_date = datetime.strptime(date_str, "%d.%m.%y")
     date_str2 = '25.11.29'
@@ -82,23 +36,23 @@ def process_group(group):
     stats.filter_date = filter_date
     stats.filter_date2 = filter_date2
 
-    ioloop = uvloop.new_event_loop()
-    asyncio.set_event_loop(ioloop)
-    tasks = [ioloop.create_task(fill_championship(champ, stats)) for champ in group]
-    wait_tasks = asyncio.wait(tasks)
-    ioloop.run_until_complete(wait_tasks)
-    ioloop.close()
+    pool = ProcessPoolExecutor(16)
+    futures = []
 
+    for champ in champs:
+        futures.append(pool.submit(fill_championship, champ,stats))
 
+    wait(futures)
 
-async def fill_championship(champ, stats):
-    # print(1)
-    # page_content = requests.get(champ.link).content
-    page = await requests.get(champ.link)
-    page_content = page.content
+    print("await matches: {}".format(stats.await_matches))
+    print("saved matches: {}".format(stats.counter))
+
+    return HttpResponse('Done')
+
+def fill_championship(champ, stats):
+    page_content = requests.get(champ.link).content
     page_soup = BeautifulSoup(page_content, 'html.parser')
     matches = page_soup.find_all(class_='game_block')
-    # print("Champ: {}, total matches: {}".format(champ.name, len(matches)))
 
     for match in matches:
         date, ht_name, ht_score, at_score, at_name=find_match_data(match)
