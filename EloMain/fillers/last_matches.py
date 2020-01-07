@@ -1,8 +1,11 @@
+import asyncio
+import time
 from collections import namedtuple
 from datetime import datetime
 from asyncio import sleep
 
-import requests
+# import requests
+import requests_async as requests
 from bs4 import BeautifulSoup
 from django.http import HttpResponse
 from selenium import webdriver
@@ -10,6 +13,9 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 from EloMain.calculator.rating_delta import calc_rating_delta
 from EloMain.models import Championship, Game, Club, Change
+
+from concurrent.futures import ThreadPoolExecutor, wait, ProcessPoolExecutor
+
 
 class Stats:
     await_matches = 0
@@ -33,24 +39,41 @@ def fill_last_matches(request):
     stats.filter_date = filter_date
     stats.filter_date2 = filter_date2
 
-    for champ in champs:
-        fill_championship(champ.link, stats)
+    # pool = ProcessPoolExecutor(16)
+    # futures = []
+
+    ioloop = asyncio.new_event_loop()
+    asyncio.set_event_loop(ioloop)
+    tasks = [ioloop.create_task(fill_championship(champ, stats)) for champ in champs]
+    wait_tasks = asyncio.wait(tasks)
+    ioloop.run_until_complete(wait_tasks)
+    ioloop.close()
+
+    # for champ in champs:
+    #     # futures.append(pool.submit(fill_championship, champ,stats))
+    #     fill_championship(champ, stats)
+
+    # wait(futures)
 
     print("await matches: {}".format(stats.await_matches))
     print("saved matches: {}".format(stats.counter))
 
     return HttpResponse('Done')
 
-def fill_championship(link, stats):
-    page_content = requests.get(link).content
+async def fill_championship(champ, stats):
+    # page_content = requests.get(champ.link).content
+    page = await requests.get(champ.link)
+    page_content = page.content
     page_soup = BeautifulSoup(page_content, 'html.parser')
     matches = page_soup.find_all(class_='game_block')
+    # print("Champ: {}, total matches: {}".format(champ.name, len(matches)))
+
     for match in matches:
         date, ht_name, ht_score, at_score, at_name=find_match_data(match)
-
+        print("{} {} {}-{} {}".format(date, ht_name, ht_score, at_score, at_name))
         if not validate_date(date):
             stats.await_matches+=1
-            break
+            continue
 
         date_obj = get_date_from_string(date)
         if date_obj < stats.filter_date:
@@ -93,7 +116,6 @@ def fill_championship(link, stats):
             # change_a.save()
             print("Save")
             stats.counter += 1
-
 
 def find_match_data(match):
     date = match.find(class_='status').find('span').get_text()

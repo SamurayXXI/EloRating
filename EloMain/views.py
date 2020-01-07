@@ -122,7 +122,11 @@ def get_chart(request):
     return HttpResponse(script)
 
 def fill_last_matches(request):
-    return last_matches_filler.fill_last_matches(request)
+    start_time = time.time()
+    response = last_matches_filler.fill_last_matches(request)
+    end_time = time.time()
+    print("Time elapsed: {}".format(end_time-start_time))
+    return response
 
 def fill_national(request):
 
