@@ -44,9 +44,6 @@ def fill_last_matches(request):
 
     wait(futures)
 
-    print("await matches: {}".format(stats.await_matches))
-    print("saved matches: {}".format(stats.counter))
-
     return HttpResponse('Done')
 
 def fill_championship(champ, stats):
@@ -73,7 +70,7 @@ def fill_championship(champ, stats):
             away_team_obj = Club.objects.get(name=at_name)
             game = Game(date=date_obj.strftime("%Y-%m-%d"), home_team=home_team_obj, away_team=away_team_obj,
                         home_score=int(ht_score), away_score=int(at_score), tournament=champ)
-            # game.save()
+            game.save()
 
             index = game.tournament.elo_index
 
@@ -90,18 +87,23 @@ def fill_championship(champ, stats):
             home_team.rating = ht_rating + delta
             away_team.rating = at_rating - delta
 
-            # home_team.save()
-            # away_team.save()
+            home_team.save()
+            away_team.save()
 
             change_h = Change(game=game, club=home_team, rating_before=ht_rating, rating_after=home_team.rating,
                               rating_delta=delta)
             change_a = Change(game=game, club=away_team, rating_before=at_rating, rating_after=away_team.rating,
                               rating_delta=-delta)
 
-            # change_h.save()
-            # change_a.save()
+            change_h.save()
+            change_a.save()
             print("Save")
             stats.counter += 1
+
+    if stats.await_matches>0:
+        print("В ожидании ({}): {}".format(champ.name, stats.await_matches))
+    if stats.counter>0:
+        print("Записано ({}): {}".format(champ.name, stats.counter))
 
 def find_match_data(match):
     date = match.find(class_='status').find('span').get_text()
