@@ -6,6 +6,7 @@ from asyncio import sleep
 
 # import requests
 import requests_async as requests
+import uvloop
 from bs4 import BeautifulSoup
 from django.http import HttpResponse
 from selenium import webdriver
@@ -29,6 +30,48 @@ class Stats:
 def fill_last_matches(request):
     champs = Championship.objects.all()
 
+    # date_str = '3.1.20'
+    # filter_date = datetime.strptime(date_str, "%d.%m.%y")
+    # date_str2 = '25.11.29'
+    # filter_date2 = datetime.strptime(date_str2, "%d.%m.%y")
+    # stats = Stats()
+    # stats.await_matches = 0
+    # stats.counter = 0
+    # stats.filter_date = filter_date
+    # stats.filter_date2 = filter_date2
+
+    # ioloop = uvloop.new_event_loop()
+    # asyncio.set_event_loop(ioloop)
+    # tasks = [ioloop.create_task(fill_championship(champ, stats)) for champ in champs]
+    # wait_tasks = asyncio.wait(tasks)
+    # ioloop.run_until_complete(wait_tasks)
+    # ioloop.close()
+
+
+    group1 = champs[0:4]
+    group2 = champs[4:8]
+    group3 = champs[8:12]
+    group4 = champs[12:16]
+    groups = [group1,group2,group3,group4]
+
+    pool = ProcessPoolExecutor(4)
+    futures = []
+
+    # for champ in champs:
+        # futures.append(pool.submit(fill_championship, champ,stats))
+        # fill_championship(champ, stats)
+
+    for group in groups:
+        futures.append(pool.submit(process_group,group))
+
+    wait(futures)
+
+    # print("await matches: {}".format(stats.await_matches))
+    # print("saved matches: {}".format(stats.counter))
+
+    return HttpResponse('Done')
+
+def process_group(group):
     date_str = '3.1.20'
     filter_date = datetime.strptime(date_str, "%d.%m.%y")
     date_str2 = '25.11.29'
@@ -39,28 +82,17 @@ def fill_last_matches(request):
     stats.filter_date = filter_date
     stats.filter_date2 = filter_date2
 
-    # pool = ProcessPoolExecutor(16)
-    # futures = []
-
-    ioloop = asyncio.new_event_loop()
+    ioloop = uvloop.new_event_loop()
     asyncio.set_event_loop(ioloop)
-    tasks = [ioloop.create_task(fill_championship(champ, stats)) for champ in champs]
+    tasks = [ioloop.create_task(fill_championship(champ, stats)) for champ in group]
     wait_tasks = asyncio.wait(tasks)
     ioloop.run_until_complete(wait_tasks)
     ioloop.close()
 
-    # for champ in champs:
-    #     # futures.append(pool.submit(fill_championship, champ,stats))
-    #     fill_championship(champ, stats)
 
-    # wait(futures)
-
-    print("await matches: {}".format(stats.await_matches))
-    print("saved matches: {}".format(stats.counter))
-
-    return HttpResponse('Done')
 
 async def fill_championship(champ, stats):
+    # print(1)
     # page_content = requests.get(champ.link).content
     page = await requests.get(champ.link)
     page_content = page.content
@@ -83,8 +115,8 @@ async def fill_championship(champ, stats):
             break
 
         if not check_game_exist(date_obj,ht_name,at_name):
-            home_team_obj = Club.objects.get(name=home_team)
-            away_team_obj = Club.objects.get(name=away_team)
+            home_team_obj = Club.objects.get(name=ht_name)
+            away_team_obj = Club.objects.get(name=at_name)
             game = Game(date=date_obj.strftime("%Y-%m-%d"), home_team=home_team_obj, away_team=away_team_obj,
                         home_score=int(ht_score), away_score=int(at_score), tournament=champ)
             # game.save()

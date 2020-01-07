@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'EloMain.apps.EloMainConfig'
+    'EloMain.apps.EloMainConfig',
+    'django_extensions'
 ]
 
 MIDDLEWARE = [
