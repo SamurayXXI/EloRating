@@ -23,12 +23,12 @@ def month_rating(request):
 def year_rating(request):
     start_time = time.time()
     year = date.today().year
-    changes = Change.objects.all().filter(game__date__gte=date(year,1,1),
+    changes = Change.objects.filter(game__date__gte=date(year,1,1),
                                        game__date__lte=date(year,12,31))
     print("Time elapsed: {}".format(time.time() - start_time))
     start_time = time.time()
     clubs = {}
-    for change in changes:
+    for change in changes.iterator():
         if not change.club in clubs:
             clubs[change.club] = change.rating_delta
         else:
