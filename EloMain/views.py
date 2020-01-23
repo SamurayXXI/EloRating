@@ -14,37 +14,55 @@ from .fillers import last_matches as last_matches_filler
 
 # Create your views here.
 
+
 def show_rating(request):
     clubs = Club.objects.all().order_by('-rating')
     return render(request, 'EloMain/rating.html', locals())
+
 
 def show_rating_by_champ(request, champ_id):
     clubs = Club.objects.filter(championship__id=champ_id).order_by('-rating')
     return render(request, 'EloMain/rating.html', locals())
 
+
 def panel(request):
     return render(request, 'EloMain/panel.html')
+
 
 def charts(request):
     return render(request, 'EloMain/charts.html')
 
+
 def position_charts(request):
     return render(request, 'EloMain/position_charts.html')
+
 
 def show_country_rating(request):
     return show_rate.show_country_rating(request)
 
+
 def top_delta(request):
     return show_rate.top_delta(request)
+
 
 def top_rating_ever(request):
     return show_rate.top_rating_ever(request)
 
+
 def month_rating(request):
     return show_rate.month_rating(request)
 
+
 def year_rating(request):
     return show_rate.year_rating(request)
+
+
+def last_changes(request):
+    changes = Change.objects.order_by('-id')[:100]
+    for change in changes:
+        print("{} {} {} {}".format(change.game, change.club, change.rating_delta, change.rating_after))
+
+    return render(request, 'EloMain/last_changes.html', locals())
 
 
 def position_continuity(request):
@@ -56,17 +74,18 @@ def position_continuity(request):
             if positions[i].club_1 not in time:
                 time[positions[i].club_1] = positions[i+1].date - positions[i].date
             else:
-                time[positions[i].club_1]+= positions[i+1].date - positions[i].date
+                time[positions[i].club_1] += positions[i+1].date - positions[i].date
         else:
             if positions[i].club_1 not in time:
                 time[positions[i].club_1] = positions[i+1].date - positions[i].date - datetime.timedelta(days=1)
             else:
-                time[positions[i].club_1]+= positions[i+1].date - positions[i].date - datetime.timedelta(days=1)
+                time[positions[i].club_1] += positions[i+1].date - positions[i].date - datetime.timedelta(days=1)
         i+=1
 
     time_sorted = sorted(time.items(), key=lambda kv: -kv[1])
 
     return render(request, 'EloMain/top_places.html', locals())
+
 
 def get_position_chart(request):
     club_name = 'Реал Мадрид'
@@ -77,13 +96,21 @@ def get_position_chart(request):
         if position.club_1 not in first_places:
             first_places.append(position.club_1)
         if position.club_1 == club_name:
-            string += '[new Date({},{},{}), {}],'.format(position.date.year,position.date.month, position.date.day, 1)
+            string += '[new Date({},{},{}), {}],'.format(position.date.year,
+                                                         position.date.month,
+                                                         position.date.day, 1)
         elif position.club_2 == club_name:
-            string += '[new Date({},{},{}), {}],'.format(position.date.year,position.date.month, position.date.day, 2)
+            string += '[new Date({},{},{}), {}],'.format(position.date.year,
+                                                         position.date.month,
+                                                         position.date.day, 2)
         elif position.club_3 == club_name:
-            string += '[new Date({},{},{}), {}],'.format(position.date.year,position.date.month, position.date.day, 3)
+            string += '[new Date({},{},{}), {}],'.format(position.date.year,
+                                                         position.date.month,
+                                                         position.date.day, 3)
         elif position.club_4 == club_name:
-            string += '[new Date({},{},{}), {}],'.format(position.date.year,position.date.month, position.date.day, 4)
+            string += '[new Date({},{},{}), {}],'.format(position.date.year,
+                                                         position.date.month,
+                                                         position.date.day, 4)
         elif position.club_5 == club_name:
             string += '[new Date({},{},{}), {}],'.format(position.date.year,position.date.month, position.date.day, 5)
         elif position.club_6 == club_name:
@@ -100,9 +127,12 @@ def get_position_chart(request):
     print(first_places)
     return HttpResponse(string)
 
+
 def get_chart(request):
-    club_names = ('Ливерпуль','Бавария', 'Барселона')
-    club_changes = Change.objects.filter(Q(club__name=club_names[0]) | Q(club__name=club_names[1]) | Q(club__name=club_names[2])).order_by('id')
+    club_names = ('Ливерпуль', 'Бавария', 'Барселона')
+    club_changes = Change.objects.filter(Q(club__name=club_names[0]) |
+                                         Q(club__name=club_names[1]) |
+                                         Q(club__name=club_names[2])).order_by('id')
     script = ''
     last_liv = 1000
     last_bav = 1000
@@ -110,16 +140,32 @@ def get_chart(request):
     for change in club_changes:
         date = change.game.date
         if change.club.name==club_names[0]:
-            script += '[new Date({},{},{}), {}, {}, {}],'.format(date.year,date.month,date.day,change.rating_after,last_bav, last_bars)
+            script += '[new Date({},{},{}), {}, {}, {}],'.format(date.year,
+                                                                 date.month,
+                                                                 date.day,
+                                                                 change.rating_after,
+                                                                 last_bav,
+                                                                 last_bars)
             last_liv = change.rating_after
         elif change.club.name == club_names[1]:
-            script += '[new Date({},{},{}), {}, {}, {}],'.format(date.year, date.month, date.day, last_liv, change.rating_after, last_bars)
+            script += '[new Date({},{},{}), {}, {}, {}],'.format(date.year,
+                                                                 date.month,
+                                                                 date.day,
+                                                                 last_liv,
+                                                                 change.rating_after,
+                                                                 last_bars)
             last_bav = change.rating_after
         elif change.club.name == club_names[2]:
-            script += '[new Date({},{},{}), {}, {}, {}],'.format(date.year, date.month, date.day, last_liv, last_bav ,change.rating_after)
+            script += '[new Date({},{},{}), {}, {}, {}],'.format(date.year,
+                                                                 date.month,
+                                                                 date.day,
+                                                                 last_liv,
+                                                                 last_bav,
+                                                                 change.rating_after)
             last_bars = change.rating_after
     print(script)
     return HttpResponse(script)
+
 
 def fill_last_matches(request):
     start_time = time.time()
@@ -127,6 +173,7 @@ def fill_last_matches(request):
     end_time = time.time()
     print("Time elapsed: {}".format(end_time-start_time))
     return response
+
 
 def fill_national(request):
 
@@ -175,6 +222,7 @@ def fill_national(request):
 
     return HttpResponse(russian_champ.link)
 
+
 def fill_lc(request):
 
     russian_champ = Championship.objects.get(name='Лига Европы Группы')
@@ -218,6 +266,7 @@ def fill_lc(request):
 
     return HttpResponse(russian_champ.link)
 
+
 def fill_lc_final(request):
 
     russian_champ = Championship.objects.get(name='Лига Европы Финалы')
@@ -257,9 +306,11 @@ def fill_lc_final(request):
 
     return HttpResponse(russian_champ.link)
 
+
 def reset_changes(request):
     Change.objects.all().delete()
     return HttpResponse("Готово")
+
 
 def reset_ratings(request):
     for club in Club.objects.all():
@@ -267,9 +318,11 @@ def reset_ratings(request):
         club.save()
     return HttpResponse("Готово")
 
+
 def reset_matches(requset):
     # Game.objects.filter(tournament__name='Голландия').delete()
     return HttpResponse("Готово")
+
 
 def test_ratings(request):
     clubs = Club.objects.all()
@@ -281,6 +334,7 @@ def test_ratings(request):
             i += 1
 
     return HttpResponse("Готово")
+
 
 def calc(request):
     games = Game.objects.all().order_by('date')
@@ -322,6 +376,7 @@ def calc(request):
     clubs = Club.objects.all().order_by('-rating')
 
     return HttpResponse("Готово")
+
 
 def fill_change_position(request):
     dates = OrderedSet()
