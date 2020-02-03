@@ -58,7 +58,7 @@ def year_rating(request):
 
 
 def last_changes(request):
-    changes = Change.objects.order_by('-id')[:100]
+    changes = Change.objects.order_by('-id')[:200]
     for change in changes:
         print("{} {} {} {}".format(change.game, change.club, change.rating_delta, change.rating_after))
 
