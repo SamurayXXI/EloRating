@@ -8,7 +8,7 @@ class Championship(models.Model):
         verbose_name_plural = 'Чемпионаты'
 
     name = models.CharField(max_length=30, verbose_name='Название')
-    icon = models.ImageField(verbose_name='Иконка', null=True, blank=True)
+    # icon = models.ImageField(verbose_name='Иконка', null=True, blank=True)
     link = models.TextField(verbose_name='Ссылка на матчи')
     elo_index = models.IntegerField(verbose_name='Коэффициент рейтинга')
 
@@ -22,7 +22,7 @@ class Club(models.Model):
         verbose_name_plural = 'Клубы'
 
     name = models.CharField(max_length=50, verbose_name='Название')
-    logo = models.ImageField(verbose_name='Логотип', null=True, blank=True)
+    # logo = models.ImageField(verbose_name='Логотип', null=True, blank=True)
     rating = models.IntegerField(verbose_name='Рейтинг')
     championship = models.ForeignKey(Championship, on_delete=models.CASCADE, related_name='championship', verbose_name='Чемпионат', default=-1)
 
