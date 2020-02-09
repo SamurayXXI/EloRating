@@ -1,0 +1,4 @@
+beautifulsoup4==4.8.2
+Django==2.2.7
+django-extensions==2.2.5
+pytz==2019.3
