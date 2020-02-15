@@ -1,0 +1,34 @@
+{% extends 'EloMain/base.html' %}
+
+{% block title %} Рейтинг ЭЛО{% endblock %}
+
+{% block rating %}
+
+<div class="container">
+
+    <table class="table">
+        <tr>
+            <th>Чемпионат</th>
+            <th>Записано</th>
+            <th>В ожидании</th>
+        </tr>
+
+        <tr>
+            <td><b>Всего</b></td>
+            {% for item in total %}
+            <td><b>{{ item }}</b></td>
+            {% endfor %}
+        </tr>
+
+        {% for line in response %}
+            <tr>
+                {% for item in line %}
+                <td>{{ item }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+
+
+{% endblock %}

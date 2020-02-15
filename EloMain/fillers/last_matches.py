@@ -3,6 +3,7 @@ from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
 from django.http import HttpResponse
+from django.shortcuts import render
 
 from EloMain.calculator.rating_delta import calc_rating_delta
 from EloMain.models import Championship, Game, Club, Change
@@ -18,6 +19,7 @@ class Stats:
 
     def __str__(self):
         return "{} {} {} {}".format(self.await_matches, self.counter, self.filter_date, self.filter_date2)
+
 
 def fill_last_matches(request):
     champs = Championship.objects.all()
@@ -39,7 +41,10 @@ def fill_last_matches(request):
 
     wait(futures)
 
-    return HttpResponse('Done')
+    response = [future.result() for future in futures]
+    total = sum(line[1] for line in response), sum(line[2] for line in response)
+    return render(request, 'EloMain/fill_result.html', locals())
+
 
 def fill_championship(champ, stats):
     page_content = requests.get(champ.link).content
@@ -99,8 +104,15 @@ def fill_championship(champ, stats):
     if stats.counter>0:
         print("Записано ({}): {}".format(champ.name, stats.counter))
 
+    return champ.name, stats.counter, stats.await_matches
+
+
 def find_match_data(match):
-    date = match.find(class_='status').find('span').get_text()
+    date = "Not valid date"
+    try:
+        date = match.find(class_='status').find('span').get_text()
+    except Exception as e:
+        print(e)
 
     ht = match.find(class_='ht')
     ht_name, ht_score = find_name_score(ht)
@@ -109,6 +121,7 @@ def find_match_data(match):
     at_name, at_score = find_name_score(at)
 
     return date, ht_name, ht_score, at_score, at_name
+
 
 def find_name_score(element):
     name = element.find(class_='name').find('span').get_text()
