@@ -6,12 +6,9 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('EloMain', '0015_remove_club_logo'),
+        ("EloMain", "0015_remove_club_logo"),
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='championship',
-            name='icon',
-        ),
+        migrations.RemoveField(model_name="championship", name="icon",),
     ]

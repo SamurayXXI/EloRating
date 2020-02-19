@@ -7,13 +7,19 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('EloMain', '0005_game'),
+        ("EloMain", "0005_game"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='game',
-            name='tournament',
-            field=models.ForeignKey(default=-1, on_delete=django.db.models.deletion.CASCADE, related_name='tournament', to='EloMain.Championship', verbose_name='Турнир'),
+            model_name="game",
+            name="tournament",
+            field=models.ForeignKey(
+                default=-1,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="tournament",
+                to="EloMain.Championship",
+                verbose_name="Турнир",
+            ),
         ),
     ]

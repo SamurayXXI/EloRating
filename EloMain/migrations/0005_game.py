@@ -7,24 +7,36 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('EloMain', '0004_auto_20191108_0902'),
+        ("EloMain", "0004_auto_20191108_0902"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Game',
+            name="Game",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date', models.DateField(verbose_name='Дата')),
-                ('home_score', models.IntegerField(verbose_name='Забили хозяева')),
-                ('away_score', models.IntegerField(verbose_name='Забили гости')),
-                ('away_team', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='away_team', to='EloMain.Club', verbose_name='Гости')),
-                ('home_team', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='home_team', to='EloMain.Club', verbose_name='Хозяева')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("date", models.DateField(verbose_name="Дата")),
+                ("home_score", models.IntegerField(verbose_name="Забили хозяева")),
+                ("away_score", models.IntegerField(verbose_name="Забили гости")),
+                (
+                    "away_team",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="away_team",
+                        to="EloMain.Club",
+                        verbose_name="Гости",
+                    ),
+                ),
+                (
+                    "home_team",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="home_team",
+                        to="EloMain.Club",
+                        verbose_name="Хозяева",
+                    ),
+                ),
             ],
-            options={
-                'verbose_name': 'Игра',
-                'verbose_name_plural': 'Игры',
-                'db_table': 'games',
-            },
+            options={"verbose_name": "Игра", "verbose_name_plural": "Игры", "db_table": "games",},
         ),
     ]

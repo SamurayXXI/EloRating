@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('EloMain', '0013_auto_20191203_1037'),
+        ("EloMain", "0013_auto_20191203_1037"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='change',
-            name='rating_after',
-            field=models.IntegerField(db_index=True, verbose_name='Рейтинг после'),
+            model_name="change",
+            name="rating_after",
+            field=models.IntegerField(db_index=True, verbose_name="Рейтинг после"),
         ),
     ]

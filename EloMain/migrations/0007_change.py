@@ -7,24 +7,40 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('EloMain', '0006_game_tournament'),
+        ("EloMain", "0006_game_tournament"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Change',
+            name="Change",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('rating_before', models.IntegerField(verbose_name='Рейтинг до')),
-                ('rating_after', models.IntegerField(verbose_name='Рейтинг после')),
-                ('rating_delta', models.IntegerField(verbose_name='Дельта')),
-                ('club', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='club', to='EloMain.Club', verbose_name='Клуб')),
-                ('game', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='game', to='EloMain.Game', verbose_name='Игра')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("rating_before", models.IntegerField(verbose_name="Рейтинг до")),
+                ("rating_after", models.IntegerField(verbose_name="Рейтинг после")),
+                ("rating_delta", models.IntegerField(verbose_name="Дельта")),
+                (
+                    "club",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="club",
+                        to="EloMain.Club",
+                        verbose_name="Клуб",
+                    ),
+                ),
+                (
+                    "game",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="game",
+                        to="EloMain.Game",
+                        verbose_name="Игра",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Изменение рейтинга',
-                'verbose_name_plural': 'Изменения рейтинга',
-                'db_table': 'changes',
+                "verbose_name": "Изменение рейтинга",
+                "verbose_name_plural": "Изменения рейтинга",
+                "db_table": "changes",
             },
         ),
     ]
