@@ -7,18 +7,28 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('EloMain', '0009_auto_20191113_1041'),
+        ("EloMain", "0009_auto_20191113_1041"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='game',
-            name='away_team',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='away_team', to='EloMain.Club', verbose_name='Гости'),
+            model_name="game",
+            name="away_team",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                related_name="away_team",
+                to="EloMain.Club",
+                verbose_name="Гости",
+            ),
         ),
         migrations.AlterField(
-            model_name='game',
-            name='home_team',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='home_team', to='EloMain.Club', verbose_name='Хозяева'),
+            model_name="game",
+            name="home_team",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                related_name="home_team",
+                to="EloMain.Club",
+                verbose_name="Хозяева",
+            ),
         ),
     ]

@@ -7,30 +7,110 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('EloMain', '0007_change'),
+        ("EloMain", "0007_change"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Position',
+            name="Position",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date', models.DateField(verbose_name='Дата')),
-                ('club_1', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='club_1', to='EloMain.Club', verbose_name='1-е место')),
-                ('club_10', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='club_10', to='EloMain.Club', verbose_name='10-е место')),
-                ('club_2', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='club_2', to='EloMain.Club', verbose_name='2-е место')),
-                ('club_3', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='club_3', to='EloMain.Club', verbose_name='3-е место')),
-                ('club_4', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='club_4', to='EloMain.Club', verbose_name='4-е место')),
-                ('club_5', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='club_5', to='EloMain.Club', verbose_name='5-е место')),
-                ('club_6', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='club_6', to='EloMain.Club', verbose_name='6-е место')),
-                ('club_7', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='club_7', to='EloMain.Club', verbose_name='7-е место')),
-                ('club_8', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='club_8', to='EloMain.Club', verbose_name='8-е место')),
-                ('club_9', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='club_9', to='EloMain.Club', verbose_name='9-е место')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("date", models.DateField(verbose_name="Дата")),
+                (
+                    "club_1",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="club_1",
+                        to="EloMain.Club",
+                        verbose_name="1-е место",
+                    ),
+                ),
+                (
+                    "club_10",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="club_10",
+                        to="EloMain.Club",
+                        verbose_name="10-е место",
+                    ),
+                ),
+                (
+                    "club_2",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="club_2",
+                        to="EloMain.Club",
+                        verbose_name="2-е место",
+                    ),
+                ),
+                (
+                    "club_3",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="club_3",
+                        to="EloMain.Club",
+                        verbose_name="3-е место",
+                    ),
+                ),
+                (
+                    "club_4",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="club_4",
+                        to="EloMain.Club",
+                        verbose_name="4-е место",
+                    ),
+                ),
+                (
+                    "club_5",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="club_5",
+                        to="EloMain.Club",
+                        verbose_name="5-е место",
+                    ),
+                ),
+                (
+                    "club_6",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="club_6",
+                        to="EloMain.Club",
+                        verbose_name="6-е место",
+                    ),
+                ),
+                (
+                    "club_7",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="club_7",
+                        to="EloMain.Club",
+                        verbose_name="7-е место",
+                    ),
+                ),
+                (
+                    "club_8",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="club_8",
+                        to="EloMain.Club",
+                        verbose_name="8-е место",
+                    ),
+                ),
+                (
+                    "club_9",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="club_9",
+                        to="EloMain.Club",
+                        verbose_name="9-е место",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Место рейтинга',
-                'verbose_name_plural': 'Места рейтинга',
-                'db_table': 'positions',
+                "verbose_name": "Место рейтинга",
+                "verbose_name_plural": "Места рейтинга",
+                "db_table": "positions",
             },
         ),
     ]
