@@ -66,7 +66,7 @@ def show_country_rating(request):
 
 
 def top_delta(request):
-    changes = Change.objects.filter(game__date__year=2019).order_by("-rating_delta")
+    changes = Change.objects.order_by("-rating_delta")
     changes = changes[:5]
     return render(request, "EloMain/top_changes.html", locals())
 
