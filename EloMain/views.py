@@ -5,7 +5,6 @@ from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils.datastructures import OrderedSet
-from selenium import webdriver
 
 from EloMain.calculator.rating_delta import calc_rating_delta
 from .models import Championship, Game, Club, Change, Position
