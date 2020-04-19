@@ -25,7 +25,7 @@ def month_rating(request):
             clubs[change.club] += change.rating_delta
     clubs = [(k, clubs[k]) for k in sorted(clubs, key=clubs.get, reverse=True)]
 
-    return render(request, "EloMain/month_rating.html", locals())
+    return render(request, "EloMain/old/month_rating.html", locals())
 
 
 def year_rating(request):
@@ -45,7 +45,7 @@ def year_rating(request):
     clubs = [(k, clubs[k]) for k in sorted(clubs, key=clubs.get, reverse=True)]
     print("Time elapsed: {}".format(time.time() - start_time))
 
-    return render(request, "EloMain/year_rating.html", locals())
+    return render(request, "EloMain/old/year_rating.html", locals())
 
 
 def show_country_rating(request):
@@ -62,13 +62,13 @@ def show_country_rating(request):
 
     print(champs)
 
-    return render(request, "EloMain/country_rating.html", locals())
+    return render(request, "EloMain/old/country_rating.html", locals())
 
 
 def top_delta(request):
     changes = Change.objects.order_by("-rating_delta")
     changes = changes[:5]
-    return render(request, "EloMain/top_changes.html", locals())
+    return render(request, "EloMain/old/top_changes.html", locals())
 
 
 def top_rating_ever(request):
@@ -85,4 +85,4 @@ def top_rating_ever(request):
         i += 1
     print("Time elapsed: {}".format(time.time() - start_time))
 
-    return render(request, "EloMain/top_rating_ever.html", locals())
+    return render(request, "EloMain/old/top_rating_ever.html", locals())

@@ -1,5 +1,6 @@
 import time
-from datetime import datetime
+from dataclasses import dataclass
+from datetime import datetime, date
 
 from django.db.models import Q
 from django.http import HttpResponse
@@ -14,26 +15,101 @@ from .fillers import last_matches as last_matches_filler
 # Create your views here.
 
 
-def show_rating(request):
+def index(request):
+    clubs = Club.objects.all().order_by("-rating")[:10]
+    return render(request, "EloMain/index.html", locals())
+
+
+def rating(request):
     clubs = Club.objects.all().order_by("-rating")
     return render(request, "EloMain/rating.html", locals())
 
 
+def country(request):
+    tourns = Championship.objects.filter(elo_index=30)
+    champs = []
+    for champ in tourns:
+        clubs = Club.objects.filter(championship=champ).order_by("-rating").filter(~Q(name="Москва"))
+        clubs = clubs[:10]
+        total = 0
+        for club in clubs:
+            total += club.rating
+        champs.append((champ, round(total / 10, 2)))
+    champs.sort(key=lambda x: -x[1])
+
+    print(champs)
+    return render(request, "EloMain/country.html", locals())
+
+
+@dataclass
+class Match:    
+    date: date
+    home_name: str
+    home_score: int
+    home_delta: str
+    home_rating: int
+    away_name: str
+    away_score: int
+    away_delta: str
+    away_rating: int
+    champ: str
+
+
+def matches(request):
+    changes = Change.objects.order_by("-id")[:200]
+    matches = []
+    match = {}
+    for i, change in enumerate(changes):
+        if not "date" in match:
+            match["date"] = change.game.date
+            match["home"] = {"name": change.game.home_team.name,
+                             "score": change.game.home_score}
+            match["away"] = {"name": change.game.away_team.name,
+                             "score": change.game.away_score}
+            match["champ"] = change.game.tournament.name
+        if change.club == change.game.home_team:
+            match["home"]["delta"] = change.rating_delta
+            match["home"]["rating"] = change.rating_after
+        if change.club == change.game.away_team:
+            match["away"]["delta"] = change.rating_delta
+            match["away"]["rating"] = change.rating_after
+        if i % 2:
+            matches.append(Match(date=match["date"],
+                                 home_name=match["home"]["name"],
+                                 home_score=match["home"]["score"],
+                                 home_delta=str(match["home"]["delta"]) if match["home"]["delta"] <= 0 else f"+{match['home']['delta']}",
+                                 home_rating=match["home"]["rating"],
+                                 away_name=match["away"]["name"],
+                                 away_score=match["away"]["score"],
+                                 away_delta=str(match["away"]["delta"]) if match["away"]["delta"] <= 0 else f"+{match['away']['delta']}",
+                                 away_rating=match["away"]["rating"],
+                                 champ=match["champ"],
+                                 ))
+            match = {}
+
+    return render(request, "EloMain/matches.html", locals())
+
+
+def show_rating(request):
+    clubs = Club.objects.all().order_by("-rating")
+    return render(request, "EloMain/old/rating.html", locals())
+
+
 def show_rating_by_champ(request, champ_id):
     clubs = Club.objects.filter(championship__id=champ_id).order_by("-rating")
-    return render(request, "EloMain/rating.html", locals())
+    return render(request, "EloMain/old/rating.html", locals())
 
 
 def panel(request):
-    return render(request, "EloMain/panel.html")
+    return render(request, "EloMain/old/panel.html")
 
 
 def charts(request):
-    return render(request, "EloMain/charts.html")
+    return render(request, "EloMain/old/charts.html")
 
 
 def position_charts(request):
-    return render(request, "EloMain/position_charts.html")
+    return render(request, "EloMain/old/position_charts.html")
 
 
 def show_country_rating(request):
@@ -61,7 +137,7 @@ def last_changes(request):
     for change in changes:
         print("{} {} {} {}".format(change.game, change.club, change.rating_delta, change.rating_after))
 
-    return render(request, "EloMain/last_changes.html", locals())
+    return render(request, "EloMain/old/last_changes.html", locals())
 
 
 def position_continuity(request):
@@ -83,7 +159,7 @@ def position_continuity(request):
 
     time_sorted = sorted(time.items(), key=lambda kv: -kv[1])
 
-    return render(request, "EloMain/top_places.html", locals())
+    return render(request, "EloMain/old/top_places.html", locals())
 
 
 def get_position_chart(request):

@@ -1,0 +1,47 @@
+{% extends 'EloMain/base.html' %}
+{% block body %}
+    <section class="section-table cid-rWgyRXyGAB" id="table1-8">
+
+
+        <div class="container container-table">
+            <h2 class="mbr-section-title mbr-fonts-style align-center pb-3 display-2">Рейтинг чемпионатов</h2>
+
+            <div class="table-wrapper">
+                <div class="container">
+
+                </div>
+
+                <div class="container scroll">
+                    <table class="table" cellspacing="0">
+                        <thead>
+                        <tr class="table-heads ">
+
+
+                            <th class="head-item mbr-fonts-style display-7">#</th>
+                            <th class="head-item mbr-fonts-style display-7">Чемпионат</th>
+                            <th class="head-item mbr-fonts-style display-7">
+                                Рейтинг
+                            </th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        {% for champ in champs %}
+                            <tr>
+                                 <td class="body-item mbr-fonts-style display-7">{{ forloop.counter }}</td>
+                                {% for item in champ %}
+                                     <td class="body-item mbr-fonts-style display-7">{% if forloop.counter == 3 %}<a href="{{ item }}">клубы</a>{% else %}
+                                    {{ item }}{% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="container table-info-container">
+
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
