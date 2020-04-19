@@ -22,9 +22,9 @@ class Stats:
 def fill_last_matches(request):
     champs = Championship.objects.all()
 
-    date_str = "12.4.20"
+    date_str = "26.2.20"
     filter_date = datetime.strptime(date_str, "%d.%m.%y")
-    date_str2 = "19.4.20"
+    date_str2 = "22.3.20"
     filter_date2 = datetime.strptime(date_str2, "%d.%m.%y")
     stats = Stats()
     stats.await_matches = 0
@@ -62,7 +62,7 @@ def fill_championship(champ, stats):
             break
 
         if date_obj > stats.filter_date2:
-            break
+            continue
 
         if not check_game_exist(date_obj, ht_name, at_name):
             home_team_obj = Club.objects.get(name=ht_name)
