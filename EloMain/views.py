@@ -54,38 +54,26 @@ class Match:
     away_rating: int
     champ: str
 
+    def __init__(self):
+        pass
+
 
 def matches(request):
-    changes = Change.objects.order_by("-id")[:200]
+    games = Game.objects.order_by("-id")[:100]
     matches = []
-    match = {}
-    for i, change in enumerate(changes):
-        if not "date" in match:
-            match["date"] = change.game.date
-            match["home"] = {"name": change.game.home_team.name,
-                             "score": change.game.home_score}
-            match["away"] = {"name": change.game.away_team.name,
-                             "score": change.game.away_score}
-            match["champ"] = change.game.tournament.name
-        if change.club == change.game.home_team:
-            match["home"]["delta"] = change.rating_delta
-            match["home"]["rating"] = change.rating_after
-        if change.club == change.game.away_team:
-            match["away"]["delta"] = change.rating_delta
-            match["away"]["rating"] = change.rating_after
-        if i % 2:
-            matches.append(Match(date=match["date"],
-                                 home_name=match["home"]["name"],
-                                 home_score=match["home"]["score"],
-                                 home_delta=str(match["home"]["delta"]) if match["home"]["delta"] <= 0 else f"+{match['home']['delta']}",
-                                 home_rating=match["home"]["rating"],
-                                 away_name=match["away"]["name"],
-                                 away_score=match["away"]["score"],
-                                 away_delta=str(match["away"]["delta"]) if match["away"]["delta"] <= 0 else f"+{match['away']['delta']}",
-                                 away_rating=match["away"]["rating"],
-                                 champ=match["champ"],
-                                 ))
-            match = {}
+    for game in games:
+        match = Match()
+        match.date = game.date
+        match.home_name = game.home_team.name
+        match.home_score = game.home_score
+        match.home_delta = Change.objects.filter(game=game, club=game.home_team).first().rating_delta
+        match.home_rating = Change.objects.filter(game=game, club=game.home_team).first().rating_after
+        match.away_name = game.away_team.name
+        match.away_score = game.away_score
+        match.away_delta = Change.objects.filter(game=game, club=game.away_team).first().rating_delta
+        match.away_rating = Change.objects.filter(game=game, club=game.away_team).first().rating_after
+        match.champ = game.tournament.name
+        matches.append(match)
 
     return render(request, "EloMain/matches.html", locals())
 
