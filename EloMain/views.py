@@ -101,7 +101,7 @@ def show_rating_by_champ(request, champ_id):
 
 
 def panel(request):
-    return render(request, "EloMain/old/panel.html")
+    return render(request, "EloMain/panel.html")
 
 
 def charts(request):
