@@ -1,0 +1,24 @@
+{% extends 'EloMain/old/../base.html' %}
+
+{% block title %} Рейтинг ЭЛО{% endblock %}
+
+{% block rating %}
+
+<div class="container">
+
+    <table class="table">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Клуб</th>
+            <th scope="col">Количество дней</th>
+        </tr>
+        {% for time, value in time_sorted %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ time }}</td>
+                <td>{{ value.days }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

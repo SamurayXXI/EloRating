@@ -1,0 +1,22 @@
+{% extends 'EloMain/old/../base.html' %}
+
+{% block title %} Рейтинг ЭЛО{% endblock %}
+
+{% block rating %}
+
+<div class="container">
+
+    <table class="table">
+        {% for club in clubs %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                {% for item in club %}
+                    <td>{{ item }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+
+
+{% endblock %}

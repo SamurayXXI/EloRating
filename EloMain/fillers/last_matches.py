@@ -41,10 +41,11 @@ def fill_last_matches(request):
 
     response = [future.result() for future in futures]
     total = sum(line[1] for line in response), sum(line[2] for line in response)
-    return render(request, "EloMain/fill_result.html", locals())
+    return render(request, "EloMain/old/fill_result.html", locals())
 
 
 def fill_championship(champ, stats):
+    print(champ.link)
     page_content = requests.get(champ.link).content
     page_soup = BeautifulSoup(page_content, "html.parser")
     matches = page_soup.find_all(class_="game_block")

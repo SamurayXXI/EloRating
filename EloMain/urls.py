@@ -11,7 +11,7 @@ urlpatterns = [
     path("reset_ratings", views.reset_ratings),
     path("reset_matches", views.reset_matches),
     path("test_ratings", views.test_ratings),
-    path("rating", views.show_rating),
+    # path("rating", views.show_rating),
     path("rating/<int:champ_id>", views.show_rating_by_champ,),
     path("country_rating", views.show_country_rating),
     path("top_changes", views.top_delta),
@@ -27,4 +27,8 @@ urlpatterns = [
     path("month_rating", views.month_rating),
     path("year_rating", views.year_rating),
     path("last_changes", views.last_changes),
+    path("", views.index, name="index"),
+    path("rating", views.rating, name="rating"),
+    path("country", views.country, name="country"),
+    path("matches", views.matches, name="matches"),
 ]

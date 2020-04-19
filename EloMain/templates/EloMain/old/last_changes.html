@@ -1,0 +1,38 @@
+{% extends 'EloMain/old/../base.html' %}
+
+{% block title %} Рейтинг ЭЛО{% endblock %}
+
+{% block rating %}
+
+<div class="container">
+
+    <table class="table">
+        {% for change in changes %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ change.game.date }}</td>
+                <td>
+                    {% if change.club == change.game.home_team %}
+                    <b>{{change.game.home_team}}</b>
+                    {% else %}
+                    {{change.game.home_team}}
+                    {% endif %}
+
+                    {{change.game.home_score}}-{{change.game.away_score}}
+
+                    {% if change.club == change.game.away_team %}
+                    <b>{{change.game.away_team}}</b>
+                    {% else %}
+                    {{change.game.away_team}}
+                    {% endif %}
+
+                </td>
+                <td>{{ change.rating_delta }}</td>
+                <td>{{ change.rating_after }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+
+
+{% endblock %}
