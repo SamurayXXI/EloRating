@@ -1,4 +1,21 @@
 {% extends 'EloMain/base.html' %}
+
+{% block script %}
+<script type="text/javascript">
+    window.onload=function(){
+    var rows = document.getElementsByTagName("tr");
+        for (var i = 0; i < rows.length; i++)
+        {
+            rows[i].onclick = function() {
+               console.log(this.id);
+               url = "country/"+this.id
+               window.open(url,"_self")
+            };
+        }
+    }
+</script>
+{% endblock %}
+
 {% block body %}
     <section class="section-table cid-rWgyRXyGAB" id="table1-8">
 
@@ -27,12 +44,10 @@
 
                         <tbody>
                         {% for champ in champs %}
-                            <tr>
-                                 <td class="body-item mbr-fonts-style display-7">{{ forloop.counter }}</td>
-                                {% for item in champ %}
-                                     <td class="body-item mbr-fonts-style display-7">{% if forloop.counter == 3 %}<a href="{{ item }}">клубы</a>{% else %}
-                                    {{ item }}{% endif %}
-                                {% endfor %}
+                            <tr id="{{ champ.id }}">
+                                <td class="body-item mbr-fonts-style display-7">{{ forloop.counter }}</td>
+                                <td class="body-item mbr-fonts-style display-7">{{ champ.name }}</td>
+                                <td class="body-item mbr-fonts-style display-7">{{ champ.rating }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>

@@ -25,20 +25,34 @@ def rating(request):
     return render(request, "EloMain/rating.html", locals())
 
 
+@dataclass
+class Country:
+    id: int
+    name: str
+    rating: int
+
+
 def country(request):
     tourns = Championship.objects.filter(elo_index=30)
     champs = []
     for champ in tourns:
-        clubs = Club.objects.filter(championship=champ).order_by("-rating").filter(~Q(name="Москва"))
+        clubs = Club.objects.filter(championship=champ).order_by("-rating")
         clubs = clubs[:10]
         total = 0
         for club in clubs:
             total += club.rating
-        champs.append((champ, round(total / 10, 2)))
-    champs.sort(key=lambda x: -x[1])
+        country_champ = Country(id=champ.id, name=champ.name, rating=round(total / 10, 2))
+        champs.append(country_champ)
+    champs.sort(key=lambda x: -x.rating)
 
     print(champs)
     return render(request, "EloMain/country.html", locals())
+
+
+def country_clubs(request, champ_id):
+    clubs = Club.objects.filter(championship__id=champ_id).order_by("-rating")
+    name = clubs.first().championship.name
+    return render(request, "EloMain/country_clubs.html", locals())
 
 
 @dataclass
