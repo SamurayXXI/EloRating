@@ -1,0 +1,118 @@
+{% extends 'EloMain/base.html' %}
+{% block script %}
+<script type="text/javascript">
+    function calc_W(goals_delta){
+        if (goals_delta < 0){
+            return 0.0
+        }
+        if (goals_delta == 0){
+            return 0.5
+        }
+        if (goals_delta > 0){
+            return 1.0
+        }
+    }
+
+    function calc_We(rating_delta){
+        var power = -rating_delta / 400
+        return 1.0 / (Math.pow(10,power) + 1)
+    }
+
+    function calc_G(goals_delta){
+        var goals_delta = Math.abs(goals_delta)
+
+        if (goals_delta < 2){
+            return 1.0
+        }
+
+        if (goals_delta == 2){
+            return 1.5
+        }
+        return (11 + goals_delta) / 8.0
+    }
+
+    function calc_rating_delta(own_rating, rival_rating, own_score, rival_score, index){
+        var goals_delta = own_score - rival_score
+        var rating_delta = own_rating - rival_rating
+        return Math.round(index * calc_G(goals_delta) * (calc_W(goals_delta) - calc_We(rating_delta)))
+    }
+
+    window.onload=function(){
+        var button = document.getElementById("calc_button");
+        button.onclick = function() {
+            var home_rating = document.getElementById("home_rating").value
+            var away_rating = document.getElementById("away_rating").value
+            var home_score = document.getElementById("home_score").value
+            var away_score = document.getElementById("away_score").value
+
+            var select = document.getElementById("champ_select");
+            var elo_index = select.options[select.selectedIndex].getAttribute("index");
+
+            var delta = calc_rating_delta(home_rating,away_rating,home_score,away_score,elo_index)
+
+            var home_result = parseInt(home_rating) + delta
+            var away_result = parseInt(away_rating) - delta
+
+            document.getElementById("home_result").value = home_result;
+            document.getElementById("away_result").value = away_result;
+        }
+    }
+</script>
+{% endblock %}
+{% block body %}
+
+    <section class="section-table cid-rWla3nQfyB" id="table1-h">
+
+
+        <div class="container container-table">
+            <h2 class="mbr-section-title mbr-fonts-style align-center pb-3 display-2">
+                Калькулятор рейтингов</h2>
+
+            <form>
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label for="home_rating">Рейтинг хозяев</label>
+                        <input type="number" class="form-control" id="home_rating" placeholder="0">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="away_rating">Рейтинг гостей</label>
+                        <input type="number" class="form-control" id="away_rating" placeholder="0">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="home_score">Голы хозяев</label>
+                        <input type="number" class="form-control" id="home_score" placeholder="0">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="away_score">Голы гостей</label>
+                        <input type="number" class="form-control" id="away_score" placeholder="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputState">Турнир</label>
+                        <select id="champ_select" class="form-control">
+                            {% for champ in champs %}
+                                <option index="{{ champ.elo_index }}">{{ champ.name }}</option>
+                            {% endfor %}
+                            <option selected index="{{ national.elo_index }}">{{ national.name }}</option>
+                        </select>
+                </div>
+                <br>
+                <center><button id="calc_button" type="button" class="btn btn-primary">Рассчёт</button></center>
+                <br>
+                <h2 class="mbr-section-title mbr-fonts-style align-center pb-2 display-2">Результат</h2>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="home_result">Рейтинг хозяев</label>
+                        <input type="text" class="form-control" id="home_result" placeholder="0" readonly>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="away_result">Рейтинг гостей</label>
+                        <input type="text" class="form-control" id="away_result" placeholder="0" readonly>
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+    </section>
+{% endblock %}

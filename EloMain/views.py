@@ -15,6 +15,12 @@ from .fillers import last_matches as last_matches_filler
 # Create your views here.
 
 
+def calculator(request):
+    champs = Championship.objects.filter(elo_index__gt=30)
+    national = Championship(name="Национальный", elo_index=30, link="")
+    return render(request, "EloMain/calculator.html", locals())
+
+
 def index(request):
     clubs = Club.objects.all().order_by("-rating")[:10]
     return render(request, "EloMain/index.html", locals())
