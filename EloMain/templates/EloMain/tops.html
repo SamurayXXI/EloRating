@@ -1,0 +1,99 @@
+{% extends 'EloMain/base.html' %}
+{% block body %}
+        <section class="section-table cid-rWgyRXyGAB" id="table1-8">
+
+
+        <div class="container container-table">
+            <h2 class="mbr-section-title mbr-fonts-style align-center pb-3 display-2">Самый рейтинговый матч</h2>
+
+            <div class="table-wrapper">
+                <div class="container">
+
+                </div>
+
+                <div class="container scroll">
+                    <table class="table isSearch" cellspacing="0">
+                    <thead>
+                    <tr class="table-heads ">
+
+
+                        <th class="head-item mbr-fonts-style display-7">#</th>
+                        <th class="head-item mbr-fonts-style display-7">Дата</th>
+                        <th class="head-item mbr-fonts-style display-7">Матч</th>
+                        <th class="head-item mbr-fonts-style display-7">Чемпионат</th>
+                        <th class="head-item mbr-fonts-style display-7">Дельта</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+
+                    {% for change in changes %}
+                    <tr>
+                        <td class="body-item mbr-fonts-style display-7">{{ forloop.counter }}</td>
+                        <td class="body-item mbr-fonts-style display-7">{{ change.game.date | date:'d.m.Y'}}</td>
+                        <td class="body-item mbr-fonts-style display-7">{{ change.game.home_team }} {{ change.game.home_score }}-{{ change.game.away_score }} {{ change.game.away_team }}
+                        </td>
+                        <td>{{ change.game.tournament.name }}</td>
+                        <td class="body-item mbr-fonts-style display-7">+{{ change.rating_delta }}</td>
+                    </tr>
+                    {% endfor %}
+
+
+
+                    </tbody>
+                </table>
+                </div>
+                <div class="container table-info-container">
+
+                </div>
+            </div>
+        </div>
+
+<br><br>
+
+        <div class="container container-table">
+            <h2 class="mbr-section-title mbr-fonts-style align-center pb-3 display-2">Наивысший рейтинг</h2>
+
+            <div class="table-wrapper">
+                <div class="container">
+
+                </div>
+
+                <div class="container scroll">
+                    <table class="table isSearch" cellspacing="0">
+                        <thead>
+                        <tr class="table-heads ">
+
+
+                            <th class="head-item mbr-fonts-style display-7">#</th>
+                            <th class="head-item mbr-fonts-style display-7">Дата</th>
+                            <th class="head-item mbr-fonts-style display-7">Клуб</th>
+                            <th class="head-item mbr-fonts-style display-7">
+                                Чемпионат
+                            </th>
+                            <th class="head-item mbr-fonts-style display-7">
+                                Рейтинг
+                            </th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        {% for t in top %}
+                            <tr>
+                                <td class="body-item mbr-fonts-style display-7">{{ forloop.counter }}</td>
+                                <td class="body-item mbr-fonts-style display-7">{{ t.game.date | date:'d.m.Y'}}</td>
+                                <td class="body-item mbr-fonts-style display-7">{{ t.club }}</td>
+                                <td class="body-item mbr-fonts-style display-7">{{ t.club.championship.name }}</td>
+                                <td class="body-item mbr-fonts-style display-7">{{ t.rating_after }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="container table-info-container">
+
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

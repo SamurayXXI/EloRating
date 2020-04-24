@@ -45,7 +45,6 @@ def country(request):
         champs.append(country_champ)
     champs.sort(key=lambda x: -x.rating)
 
-    print(champs)
     return render(request, "EloMain/country.html", locals())
 
 
@@ -53,6 +52,24 @@ def country_clubs(request, champ_id):
     clubs = Club.objects.filter(championship__id=champ_id).order_by("-rating")
     name = clubs.first().championship.name
     return render(request, "EloMain/country_clubs.html", locals())
+
+def tops(request):
+    changes = Change.objects.order_by("-rating_delta")
+    changes = changes[:10]
+
+    top_changes = Change.objects.all().order_by("-rating_after")
+    print(top_changes)
+    used_clubs = []
+    top = []
+    i = 0
+    while len(top) < 10:
+        change = top_changes[i]
+        if change.club not in used_clubs:
+            top.append(change)
+            used_clubs.append(change.club)
+        i += 1
+
+    return render(request, "EloMain/tops.html", locals())
 
 
 @dataclass

@@ -32,4 +32,5 @@ urlpatterns = [
     path("country/<int:champ_id>", views.country_clubs),
     path("country", views.country, name="country"),
     path("matches", views.matches, name="matches"),
+    path("tops", views.tops, name="tops"),
 ]
