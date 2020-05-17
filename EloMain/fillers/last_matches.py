@@ -22,9 +22,9 @@ class Stats:
 def fill_last_matches(request):
     champs = Championship.objects.all()
 
-    date_str = "26.2.20"
+    date_str = "14.5.20"
     filter_date = datetime.strptime(date_str, "%d.%m.%y")
-    date_str2 = "22.3.20"
+    date_str2 = "22.3.21"
     filter_date2 = datetime.strptime(date_str2, "%d.%m.%y")
     stats = Stats()
     stats.await_matches = 0
