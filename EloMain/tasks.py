@@ -2,23 +2,10 @@ from datetime import datetime
 
 import requests
 from bs4 import BeautifulSoup
-from celery.schedules import crontab
 
 from EloMain.calculator.rating_delta import calc_rating_delta
 from EloMain.models import Championship, Club, Change, Game, Options
 from EloRating.celery import app
-
-
-@app.task
-def sum_(a, b):
-    return a+b
-
-
-# @app.on_after_configure.connect
-# def setup_periodic_tasks(sender, **kwargs):
-#     for champ in Championship.objects.all():
-#         print(champ.id)
-#         sender.add_periodic_task(crontab(), fill_championship(champ.id))
 
 
 class Stats:

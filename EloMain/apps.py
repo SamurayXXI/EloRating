@@ -13,7 +13,7 @@ class EloMainConfig(AppConfig):
             def schedule(champ_id):
                 app.conf.beat_schedule[f'fill-championship-{champ_id}'] = {
                     'task': 'EloMain.tasks.fill_championship',
-                    'schedule': crontab(),
+                    'schedule': crontab(minute=0, hour=4),
                     'args': (champ_id,)
                 }
             schedule(champ.id)

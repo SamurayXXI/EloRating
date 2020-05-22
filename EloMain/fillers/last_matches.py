@@ -23,7 +23,7 @@ def fill_last_matches(request):
     pool = ProcessPoolExecutor(16)
     futures = []
     for champ in champs:
-        fill_championship.delay(champ.id, stats.filter_date, stats.filter_date2)
+        fill_championship.delay(champ.id)
 
     return HttpResponse('done')
 
