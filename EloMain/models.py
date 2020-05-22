@@ -106,3 +106,16 @@ class Position(models.Model):
             self.club_9,
             self.club_10,
         )
+
+
+class Options(models.Model):
+    class Meta:
+        db_table = "options"
+        verbose_name = "Опция"
+        verbose_name_plural = "Опции приложения"
+
+    name = models.CharField(max_length=30, verbose_name="Имя опции")
+    value = models.TextField(verbose_name="Значение")
+
+    def __str__(self):
+        return f"{{ {self.name}: {self.value} }}"

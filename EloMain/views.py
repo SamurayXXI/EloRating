@@ -1,6 +1,8 @@
+import math
 import time
 from dataclasses import dataclass
 from datetime import datetime, date
+from random import Random
 
 from django.db.models import Q
 from django.http import HttpResponse
@@ -575,3 +577,9 @@ def fill_change_position(request):
             last_club_list = club_list
 
     return HttpResponse(dates)
+
+
+def celery_sum(request):
+    from .tasks import sum_
+    sum_.delay(2, 3)
+    return HttpResponse(200)

@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 from .filters import LastMonthFilter
-from .models import Championship, Club, Game, Change, Position
+from .models import Championship, Club, Game, Change, Position, Options
 
 
 class ClubAdmin(admin.ModelAdmin):
@@ -27,3 +27,4 @@ admin.site.register(Club, ClubAdmin)
 admin.site.register(Game, GameAdmin)
 admin.site.register(Change, ChangeAdmin)
 admin.site.register(Position)
+admin.site.register(Options)
