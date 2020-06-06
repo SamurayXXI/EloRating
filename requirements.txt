@@ -1,5 +1,5 @@
 celery
 beautifulsoup4==4.8.2
-Django==2.2.7
+Django==2.2.13
 django-extensions==2.2.5
 pytz==2019.3
