@@ -13,7 +13,7 @@ class Championship(models.Model):
     elo_index = models.IntegerField(verbose_name="Коэффициент рейтинга")
 
     def __str__(self):
-        return self.name
+        return f"{self.id}. {self.name}"
 
 
 class Club(models.Model):
